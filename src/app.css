@@ -1,0 +1,12 @@
+html {
+  font-family: MedievalSharp, sans-serif;
+  color: #3f1700dd;
+}
+
+.score-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 0.25rem;
+}

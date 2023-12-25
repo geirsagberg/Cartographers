@@ -12,6 +12,11 @@ import {
   FaWater,
   FaWheatAwn,
 } from 'react-icons/fa6'
+import Modal from 'react-modal'
+
+import './app.css'
+import Scores from './Scores'
+import { sumScores } from './utils'
 
 const Empty = 0
 const Mountain = 1
@@ -22,36 +27,19 @@ const Hamlet = 5
 const Monster = 6
 const Ruins = 7
 
-const MaxSize = 400
+export const IconSize = '1.25rem'
 
-const IconSize = '1.5rem'
+export const LargeIconSize = '2rem'
 
-const LargeIconSize = '2rem'
+export const SmallButtonSize = '2rem'
 
-const SmallButtonSize = '2rem'
+export const CellSize = '2rem'
 
-const TextColor = '#3f1700dd'
-
-const ScoreStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '0.5rem',
-  width: '4rem',
-}
-
-const ScoreInputStyle: CSSProperties = {
-  color: TextColor,
-  width: '3rem',
-  fontSize: '1.5rem',
-  textAlign: 'center',
-  background: 'rgba(0, 0, 0, 0.08)',
-}
+export const TextColor = '#3f1700dd'
 
 const CoinButtonStyle: CSSProperties = {
   width: SmallButtonSize,
   height: SmallButtonSize,
-  border: '2px solid ' + TextColor,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -81,12 +69,12 @@ const StartBoard: Cell[][] = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
-const RuinsColor = '#3f170077'
+const RuinsColor = '#3f170055'
 
 const ColorMap = {
   [Empty]: 'rgba(0, 0, 0, 0.08)',
   [Ruins]: 'rgba(0, 0, 0, 0.08)',
-  [Mountain]: '#6d6d6d62',
+  [Mountain]: '#16161662',
   [Water]: '#075dc362',
   [Forest]: '#1d510a62',
   [Field]: '#d09a1062',
@@ -107,6 +95,15 @@ const IconMap = {
 
 const Selections: Cell[] = [Water, Forest, Field, Hamlet, Monster]
 
+const EmptyScores: Scores = {
+  first: null,
+  second: null,
+  coins: null,
+  monsters: null,
+}
+
+Modal.setAppElement('#root')
+
 export default function App() {
   const [color, setColor] = useState<Cell>(Empty)
 
@@ -114,23 +111,35 @@ export default function App() {
 
   const [coins, setCoins] = useState(0)
 
-  const [springScore, setSpringScore] = useState('')
-  const [summerScore, setSummerScore] = useState('')
-  const [fallScore, setFallScore] = useState('')
-  const [winterScore, setWinterScore] = useState('')
+  const [expandSpring, setExpandSpring] = useState(false)
+  const [expandSummer, setExpandSummer] = useState(false)
+  const [expandFall, setExpandFall] = useState(false)
+  const [expandWinter, setExpandWinter] = useState(false)
+  const [springScore, setSpringScore] = useState<Scores>(EmptyScores)
+  const [summerScore, setSummerScore] = useState<Scores>(EmptyScores)
+  const [fallScore, setFallScore] = useState<Scores>(EmptyScores)
+  const [winterScore, setWinterScore] = useState<Scores>(EmptyScores)
+
+  const sumSpring = sumScores(springScore)
+  const sumSummer = sumScores(summerScore)
+  const sumFall = sumScores(fallScore)
+  const sumWinter = sumScores(winterScore)
+
+  const sum =
+    sumSpring && sumSummer && sumFall && sumWinter
+      ? sumSpring + sumSummer + sumFall + sumWinter
+      : undefined
 
   return (
     <div
       style={{
-        fontFamily: 'MedievalSharp, sans-serif',
-        color: TextColor,
         width: '100dvw',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
         userSelect: 'none',
-        margin: '2rem 0',
+        margin: '1rem 0',
       }}
     >
       <div
@@ -139,19 +148,15 @@ export default function App() {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
-          padding: '1rem',
           gap: '1rem',
+          width: 356,
         }}
       >
         <div
           style={{
             display: 'grid',
-            width: 'calc(100vw - 2rem)',
-            height: 'calc(100vw - 2rem)',
             gridTemplateColumns: `repeat(${board[0].length}, 1fr)`,
             border: '2px solid ' + TextColor,
-            maxWidth: MaxSize,
-            maxHeight: MaxSize,
           }}
         >
           {board.map((row, y) =>
@@ -172,6 +177,8 @@ export default function App() {
                   justifyContent: 'center',
                   alignItems: 'center',
                   position: 'relative',
+                  width: CellSize,
+                  height: CellSize,
                 }}
               >
                 {StartBoard[y][x] === Ruins && cell !== Ruins && (
@@ -203,8 +210,7 @@ export default function App() {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            width: 'calc(100vw - 2rem)',
-            maxWidth: MaxSize,
+            width: '100%',
           }}
         >
           {Selections.map((cell: Cell) => (
@@ -239,6 +245,7 @@ export default function App() {
             '& :active': {
               backgroundColor: 'rgba(0, 0, 0, 0.08)',
             },
+            alignItems: 'center',
           }}
         >
           <div
@@ -247,19 +254,9 @@ export default function App() {
           >
             <FaMinus size={LargeIconSize} />
           </div>
-          <div
-            style={{
-              width: '3rem',
-              height: '3rem',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
-            }}
-          >
-            <span style={{ fontSize: '1.5rem' }}>{coins}</span>
-            <FaCoins size={LargeIconSize} />
-          </div>
+
+          <FaCoins />
+          <span style={{ fontSize: '1.5rem', width: '1.5rem' }}>{coins}</span>
           <div style={CoinButtonStyle} onClick={() => setCoins(coins + 1)}>
             <FaPlus size={LargeIconSize} />
           </div>
@@ -270,74 +267,61 @@ export default function App() {
             flexDirection: 'column',
             alignItems: 'center',
             gap: '0.5rem',
+            width: '100%',
           }}
         >
           <div
             css={{
               display: 'flex',
               justifyContent: 'space-between',
-              gap: '2rem',
+              gap: '0.5rem',
+              width: '100%',
+              alignItems: 'start',
             }}
           >
-            <div style={ScoreStyle}>
-              <div>Spring</div>
-              <input
-                type="number"
-                style={ScoreInputStyle}
-                value={springScore}
-                onChange={(e) => setSpringScore(e.target.value)}
-              />
-            </div>
-
-            <div style={ScoreStyle}>
-              <div>Summer</div>
-              <input
-                type="number"
-                style={ScoreInputStyle}
-                value={summerScore}
-                onChange={(e) => setSummerScore(e.target.value)}
-              />
-            </div>
-
-            <div style={ScoreStyle}>
-              <div>Fall</div>
-              <input
-                type="number"
-                style={ScoreInputStyle}
-                value={fallScore}
-                onChange={(e) => setFallScore(e.target.value)}
-              />
-            </div>
-
-            <div style={ScoreStyle}>
-              <div>Winter</div>
-              <input
-                type="number"
-                style={ScoreInputStyle}
-                value={winterScore}
-                onChange={(e) => setWinterScore(e.target.value)}
-              />
-            </div>
+            <Scores
+              setExpand={setExpandSpring}
+              expand={expandSpring}
+              scores={springScore}
+              setScores={setSpringScore}
+              label="Spring"
+              firstLabel="A"
+              secondLabel="B"
+            />
+            <Scores
+              setExpand={setExpandSummer}
+              expand={expandSummer}
+              scores={summerScore}
+              setScores={setSummerScore}
+              label="Summer"
+              firstLabel="B"
+              secondLabel="C"
+            />
+            <Scores
+              setExpand={setExpandFall}
+              expand={expandFall}
+              scores={fallScore}
+              setScores={setFallScore}
+              label="Fall"
+              firstLabel="C"
+              secondLabel="D"
+            />
+            <Scores
+              setExpand={setExpandWinter}
+              expand={expandWinter}
+              scores={winterScore}
+              setScores={setWinterScore}
+              label="Winter"
+              firstLabel="D"
+              secondLabel="A"
+            />
           </div>
           <div
             style={{
               fontSize: '1.5rem',
             }}
           >
-            {' '}
-            {(springScore && summerScore && fallScore && winterScore && (
-              <>
-                <span>Sum: </span>
-                {
-                  <span>
-                    {Number(springScore) +
-                      Number(summerScore) +
-                      Number(fallScore) +
-                      Number(winterScore)}
-                  </span>
-                }
-              </>
-            )) || <span>&nbsp;</span>}
+            {(sum && <span>Sum: {sum}</span>) || <span>&nbsp;</span>}
           </div>
         </div>
       </div>
