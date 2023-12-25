@@ -40,8 +40,10 @@ const StartBoard: Cell[][] = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
+const TextColor = '#3f1700dd'
+
 const ColorMap = {
-  [Empty]: 'white',
+  [Empty]: 'rgba(0, 0, 0, 0.05)',
   [Mountain]: 'brown',
   [Water]: 'blue',
   [Forest]: 'green',
@@ -60,6 +62,8 @@ const IconMap = {
   [Monster]: FaSpaghettiMonsterFlying,
 }
 
+const IconSize = '2rem'
+
 const Selections: Cell[] = [Empty, Water, Forest, Field, Hamlet, Monster]
 
 export default function App() {
@@ -70,12 +74,15 @@ export default function App() {
   return (
     <div
       style={{
+        fontFamily: 'MedievalSharp, sans-serif',
+        color: TextColor,
         width: '100dvw',
         height: '100dvh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
+        userSelect: 'none',
       }}
     >
       <h1>Cartographers</h1>
@@ -85,6 +92,9 @@ export default function App() {
           width: 'calc(100vw - 2rem)',
           height: 'calc(100vw - 2rem)',
           gridTemplateColumns: `repeat(${board[0].length}, 1fr)`,
+          border: '2px solid ' + TextColor,
+          maxWidth: 512,
+          maxHeight: 512,
         }}
       >
         {board.map((row, y) =>
@@ -98,7 +108,7 @@ export default function App() {
                 setBoard(newBoard)
               }}
               style={{
-                border: '1px solid black',
+                border: '0.5px solid ' + TextColor,
                 backgroundColor: ColorMap[cell],
                 display: 'flex',
                 justifyContent: 'center',
@@ -106,9 +116,9 @@ export default function App() {
               }}
             >
               {IconMap[cell] ? (
-                IconMap[cell]({ size: '1.5rem', color: 'white' })
+                IconMap[cell]({ size: IconSize, color: 'white' })
               ) : (
-                <span style={{ width: '1.5rem', height: '1.5rem' }}>
+                <span style={{ width: IconSize, height: IconSize }}>
                   &nbsp;
                 </span>
               )}
@@ -122,6 +132,8 @@ export default function App() {
           justifyContent: 'space-around',
           width: '100vw',
           marginTop: '2rem',
+          maxWidth: 512,
+          marginBottom: '2rem',
         }}
       >
         {Selections.map((cell: Cell) => (
