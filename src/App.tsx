@@ -24,6 +24,12 @@ const Ruins = 7
 
 const MaxSize = 400
 
+const IconSize = '1.5rem'
+
+const LargeIconSize = '2rem'
+
+const SmallButtonSize = '2rem'
+
 const TextColor = '#3f1700dd'
 
 const ScoreStyle: CSSProperties = {
@@ -40,6 +46,15 @@ const ScoreInputStyle: CSSProperties = {
   fontSize: '1.5rem',
   textAlign: 'center',
   background: 'rgba(0, 0, 0, 0.08)',
+}
+
+const CoinButtonStyle: CSSProperties = {
+  width: SmallButtonSize,
+  height: SmallButtonSize,
+  border: '2px solid ' + TextColor,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
 }
 
 type Cell =
@@ -90,12 +105,6 @@ const IconMap = {
   [Monster]: FaSpaghettiMonsterFlying,
 }
 
-const IconSize = '1.5rem'
-
-const LargeIconSize = '2rem'
-
-const SmallButtonSize = '2rem'
-
 const Selections: Cell[] = [Empty, Water, Forest, Field, Hamlet, Monster]
 
 export default function App() {
@@ -116,7 +125,6 @@ export default function App() {
         fontFamily: 'MedievalSharp, sans-serif',
         color: TextColor,
         width: '100dvw',
-        height: '100dvh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -131,16 +139,9 @@ export default function App() {
           alignItems: 'center',
           flexDirection: 'column',
           padding: '1rem',
-          gap: '2rem',
+          gap: '1rem',
         }}
       >
-        <h1
-          style={{
-            margin: 0,
-          }}
-        >
-          Cartographers
-        </h1>
         <div
           style={{
             display: 'grid',
@@ -236,17 +237,10 @@ export default function App() {
           }}
         >
           <div
-            style={{
-              width: SmallButtonSize,
-              height: SmallButtonSize,
-              border: '2px solid ' + TextColor,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onClick={() => setCoins(coins + 1)}
+            style={CoinButtonStyle}
+            onClick={() => setCoins((c) => Math.max(0, c - 1))}
           >
-            <FaPlus size={LargeIconSize} />
+            <FaMinus size={LargeIconSize} />
           </div>
           <div
             style={{
@@ -261,19 +255,8 @@ export default function App() {
             <span style={{ fontSize: '1.5rem' }}>{coins}</span>
             <FaCoins size={LargeIconSize} />
           </div>
-
-          <div
-            style={{
-              width: SmallButtonSize,
-              height: SmallButtonSize,
-              border: '2px solid ' + TextColor,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onClick={() => setCoins((c) => Math.max(0, c - 1))}
-          >
-            <FaMinus size={LargeIconSize} />
+          <div style={CoinButtonStyle} onClick={() => setCoins(coins + 1)}>
+            <FaPlus size={LargeIconSize} />
           </div>
         </div>
         <div
