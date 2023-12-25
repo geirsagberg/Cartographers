@@ -105,7 +105,7 @@ const IconMap = {
   [Monster]: FaSpaghettiMonsterFlying,
 }
 
-const Selections: Cell[] = [Empty, Water, Forest, Field, Hamlet, Monster]
+const Selections: Cell[] = [Water, Forest, Field, Hamlet, Monster]
 
 export default function App() {
   const [color, setColor] = useState<Cell>(Empty)
@@ -130,6 +130,7 @@ export default function App() {
         justifyContent: 'center',
         flexDirection: 'column',
         userSelect: 'none',
+        margin: '2rem 0',
       }}
     >
       <div
@@ -160,7 +161,8 @@ export default function App() {
                 onClick={() => {
                   if (cell === Mountain) return
                   const newBoard = JSON.parse(JSON.stringify(board))
-                  newBoard[y][x] = color === Empty ? StartBoard[y][x] : color
+                  newBoard[y][x] =
+                    color === Empty || color === cell ? StartBoard[y][x] : color
                   setBoard(newBoard)
                 }}
                 style={{
@@ -231,9 +233,12 @@ export default function App() {
           ))}
         </div>
         <div
-          style={{
+          css={{
             display: 'flex',
             gap: '0.5rem',
+            '& :active': {
+              backgroundColor: 'rgba(0, 0, 0, 0.08)',
+            },
           }}
         >
           <div
@@ -267,15 +272,8 @@ export default function App() {
             gap: '0.5rem',
           }}
         >
-          <h2
-            style={{
-              margin: 0,
-            }}
-          >
-            Score
-          </h2>
           <div
-            style={{
+            css={{
               display: 'flex',
               justifyContent: 'space-between',
               gap: '2rem',
