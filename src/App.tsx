@@ -1,5 +1,14 @@
 import { useState } from 'react'
 
+import {
+  FaHouse,
+  FaMountain,
+  FaSpaghettiMonsterFlying,
+  FaTree,
+  FaWater,
+  FaWheatAwn,
+} from 'react-icons/fa6'
+
 const Empty = 0
 const Mountain = 1
 const Water = 2
@@ -39,6 +48,16 @@ const ColorMap = {
   [Field]: 'orange',
   [Hamlet]: 'red',
   [Monster]: 'purple',
+}
+
+const IconMap = {
+  [Empty]: undefined,
+  [Mountain]: FaMountain,
+  [Water]: FaWater,
+  [Forest]: FaTree,
+  [Field]: FaWheatAwn,
+  [Hamlet]: FaHouse,
+  [Monster]: FaSpaghettiMonsterFlying,
 }
 
 const Selections: Cell[] = [Empty, Water, Forest, Field, Hamlet, Monster]
@@ -81,8 +100,19 @@ export default function App() {
               style={{
                 border: '1px solid black',
                 backgroundColor: ColorMap[cell],
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
-            />
+            >
+              {IconMap[cell] ? (
+                IconMap[cell]({ size: '1.5rem', color: 'white' })
+              ) : (
+                <span style={{ width: '1.5rem', height: '1.5rem' }}>
+                  &nbsp;
+                </span>
+              )}
+            </div>
           ))
         )}
       </div>
@@ -102,9 +132,18 @@ export default function App() {
               height: '3rem',
               border: '1px solid black',
               boxShadow: cell === color ? '0 0 0.5rem black' : undefined,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
             onClick={() => setColor(cell)}
-          />
+          >
+            {IconMap[cell] ? (
+              IconMap[cell]({ size: '2.5rem', color: 'white' })
+            ) : (
+              <span style={{ width: '2.5rem', height: '2.5rem' }}>&nbsp;</span>
+            )}
+          </div>
         ))}
       </div>
     </div>
