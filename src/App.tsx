@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import {
+  FaBuildingColumns,
   FaHouse,
   FaMountain,
   FaSpaghettiMonsterFlying,
@@ -16,6 +17,7 @@ const Forest = 3
 const Field = 4
 const Hamlet = 5
 const Monster = 6
+const Ruins = 7
 
 type Cell =
   | typeof Empty
@@ -25,35 +27,38 @@ type Cell =
   | typeof Field
   | typeof Hamlet
   | typeof Monster
+  | typeof Ruins
 
 const StartBoard: Cell[][] = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+  [0, 0, 0, 1, 0, 7, 0, 0, 0, 0, 0],
+  [0, 7, 0, 0, 0, 0, 0, 0, 1, 7, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+  [0, 7, 1, 0, 0, 0, 0, 0, 0, 7, 0],
+  [0, 0, 0, 0, 0, 7, 0, 1, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
 const TextColor = '#3f1700dd'
 
 const ColorMap = {
-  [Empty]: 'rgba(0, 0, 0, 0.05)',
-  [Mountain]: 'brown',
-  [Water]: 'blue',
-  [Forest]: 'green',
-  [Field]: 'orange',
-  [Hamlet]: 'red',
-  [Monster]: 'purple',
+  [Empty]: 'rgba(0, 0, 0, 0.08)',
+  [Ruins]: '#3f170066',
+  [Mountain]: '#6d6d6d62',
+  [Water]: '#075dc362',
+  [Forest]: '#1d510a62',
+  [Field]: '#d09a1062',
+  [Hamlet]: '#84100062',
+  [Monster]: '#59059662',
 }
 
 const IconMap = {
   [Empty]: undefined,
+  [Ruins]: FaBuildingColumns,
   [Mountain]: FaMountain,
   [Water]: FaWater,
   [Forest]: FaTree,
@@ -62,7 +67,7 @@ const IconMap = {
   [Monster]: FaSpaghettiMonsterFlying,
 }
 
-const IconSize = '2rem'
+const IconSize = '1.5rem'
 
 const Selections: Cell[] = [Empty, Water, Forest, Field, Hamlet, Monster]
 
