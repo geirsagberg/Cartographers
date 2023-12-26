@@ -2,10 +2,17 @@ import { FaX } from 'react-icons/fa6'
 import { edicts } from '../rules'
 
 import { InstanceProps } from 'react-modal-promise'
+import { TextColor } from '../themes'
 
-interface EdictsProps extends InstanceProps<number> {}
+interface EdictsProps extends InstanceProps<number> {
+  currentEdict?: number | null
+}
 
-export default function Edicts({ isOpen, onResolve }: EdictsProps) {
+export default function Edicts({
+  isOpen,
+  onResolve,
+  currentEdict,
+}: EdictsProps) {
   if (!isOpen) {
     return null
   }
@@ -58,6 +65,8 @@ export default function Edicts({ isOpen, onResolve }: EdictsProps) {
               key={edict.id}
               style={{
                 width: '100%',
+                boxShadow:
+                  currentEdict === edict.id ? '0 0 2px 6px ' + TextColor : '',
               }}
               src={`https://www.happymeeple.com/img/CTG/scoring/${edict.id}.jpg`}
               alt={edict.name}

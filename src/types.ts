@@ -6,6 +6,7 @@ export const Field = 'F'
 export const Hamlet = 'H'
 export const Monster = 'A'
 export const Ruins = 'R'
+export const Edge = 'X'
 
 export type Scores = {
   season: Season
@@ -34,6 +35,7 @@ export type Field = typeof Field
 export type Hamlet = typeof Hamlet
 export type Monster = typeof Monster
 export type Ruins = typeof Ruins
+export type Edge = typeof Edge
 
 export type Terrain =
   | Empty
@@ -44,6 +46,7 @@ export type Terrain =
   | Hamlet
   | Monster
   | Ruins
+  | Edge
 
 export type PlaceableTerrain = Forest | Field | Hamlet | Monster | Water
 

@@ -67,7 +67,7 @@ export const DefaultBoard: Terrain[][] = [
 ]
 
 const useGameStateBase = create<GameState>()(
-  immer((set) => ({
+  immer((set, get) => ({
     board: DefaultBoard,
     season: 'Spring',
     scores: [],
@@ -99,7 +99,7 @@ const useGameStateBase = create<GameState>()(
       }),
     confirmPlacement: () =>
       set((state) => {
-        const { nextPiece, selectedTerrain, board, season, edicts } = state
+        const { nextPiece, selectedTerrain, board } = state
         if (isLegalPlacement(nextPiece, selectedTerrain)) {
           nextPiece.forEach((coords) => {
             const [x, y] = fromCoords(coords)
@@ -112,19 +112,7 @@ const useGameStateBase = create<GameState>()(
             state.placementCoins += 1
           }
           nextPiece.clear()
-          if (season !== null) {
-            const [firstDecree, secondDecree] = getDecrees(season)
-            const firstEdictId = edicts[firstDecree]
-            const secondEdictId = edicts[secondDecree]
-            if (firstEdictId !== null) {
-              state.firstDecreeScore =
-                edictsById[firstEdictId].calculateScore(board)
-            }
-            if (secondEdictId !== null) {
-              state.secondDecreeScore =
-                edictsById[secondEdictId].calculateScore(board)
-            }
-          }
+          recalculateScores(state)
         }
       }),
     clearPiece: () =>
@@ -168,10 +156,13 @@ const useGameStateBase = create<GameState>()(
         }
       }),
     selectEdict: async (decree: 'A' | 'B' | 'C' | 'D') => {
-      const id = await showEdicts(decree)
+      const id = await showEdicts({
+        currentEdict: get().edicts[decree] ?? null,
+      })
       if (id) {
         set((state) => {
           state.edicts[decree] = id
+          recalculateScores(state)
         })
       }
     },
@@ -252,4 +243,19 @@ function getMonsters(board: Board) {
         ).length
     )
     .reduce((a, b) => a + b, 0)
+}
+
+function recalculateScores(state: GameState) {
+  const { season, edicts, board } = state
+  if (season !== null) {
+    const [firstDecree, secondDecree] = getDecrees(season)
+    const firstEdictId = edicts[firstDecree]
+    const secondEdictId = edicts[secondDecree]
+    if (firstEdictId !== null) {
+      state.firstDecreeScore = edictsById[firstEdictId].calculateScore(board)
+    }
+    if (secondEdictId !== null) {
+      state.secondDecreeScore = edictsById[secondEdictId].calculateScore(board)
+    }
+  }
 }

@@ -40,7 +40,10 @@ export default function ScoresView({ scores }: { scores: Scores }) {
           <FaCoins />
           <span>{coins}</span>
           <FaSpaghettiMonsterFlying />
-          <span>-{monsters}</span>
+          <span>
+            {monsters > 0 ? '-' : ''}
+            {monsters}
+          </span>
         </div>
       ) : (
         <span>{first + second + coins - monsters}</span>
