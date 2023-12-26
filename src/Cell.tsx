@@ -22,7 +22,7 @@ export default function Cell({ x, y, terrain }: CellProps) {
   const coords = toCoords(x, y)
   const isPlacing = nextPiece.has(coords)
   const color = tinyColor(ColorMap[terrain])
-  const selectedColor = (isPlacing ? color : color.darken(0)).toString()
+  const selectedColor = (isPlacing ? color.lighten(5) : color).toString()
   return (
     <div
       onClick={() => toggleNextPiece(coords)}
