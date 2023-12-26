@@ -35,7 +35,7 @@ export const RuinsColor = '#3f170055'
 export const ColorMap = {
   [Empty]: 'rgba(0, 0, 0, 0.08)',
   [Ruins]: 'rgba(0, 0, 0, 0.08)',
-  [Mountain]: '#16161662',
+  [Mountain]: TextColor,
   [Water]: '#075dc362',
   [Forest]: '#1d510a62',
   [Field]: '#d09a1062',
