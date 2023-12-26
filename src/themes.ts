@@ -8,6 +8,7 @@ import {
   FaWheatAwn,
 } from 'react-icons/fa6'
 import {
+  Edge,
   Empty,
   Field,
   Forest,
@@ -15,6 +16,7 @@ import {
   Monster,
   Mountain,
   Ruins,
+  Terrain,
   Water,
 } from './types'
 
@@ -39,9 +41,10 @@ export const ColorMap = {
   [Field]: '#d09a1062',
   [Hamlet]: '#84100062',
   [Monster]: '#59059662',
+  [Edge]: 'rgba(0, 0, 0, 0.08)',
 }
 
-export const IconMap = {
+export const IconMap: Record<Terrain, any> = {
   [Empty]: undefined,
   [Ruins]: FaBuildingColumns,
   [Mountain]: FaMountain,
@@ -50,4 +53,5 @@ export const IconMap = {
   [Field]: FaWheatAwn,
   [Hamlet]: FaHouse,
   [Monster]: FaSpaghettiMonsterFlying,
+  [Edge]: undefined,
 }
