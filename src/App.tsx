@@ -188,7 +188,8 @@ export default function App() {
             <span style={{ width: '1rem' }}>{coins}</span>
             <FaSpaghettiMonsterFlying />
             <span style={{ width: '1rem', whiteSpace: 'nowrap' }}>
-              -{monsters}
+              {monsters > 0 ? '-' : ''}
+              {monsters}
             </span>
           </div>
           <div
