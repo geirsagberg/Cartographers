@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa6'
 import Modal from 'react-modal'
 
+import tinycolor from 'tinycolor2'
 import Cell from './Cell'
 import ScoresView from './ScoresView'
 import './app.css'
@@ -123,7 +124,10 @@ export default function App() {
             <div
               key={terrain}
               style={{
-                backgroundColor: ColorMap[terrain],
+                backgroundColor:
+                  terrain === selectedTerrain
+                    ? tinycolor(ColorMap[terrain]).lighten(5).toString()
+                    : ColorMap[terrain],
                 width: '3rem',
                 height: '3rem',
                 border: '2px solid ' + TextColor,
