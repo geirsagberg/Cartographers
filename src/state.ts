@@ -5,6 +5,7 @@ import { createSelectors } from './createSelectors'
 import { isLegalPlacement } from './rules'
 import {
   Empty,
+  Monster,
   Mountain,
   PlaceableTerrain,
   Ruins,
@@ -35,6 +36,7 @@ interface GameState {
   board: Board
   selectedTerrain: PlaceableTerrain
   nextPiece: Set<Coords>
+  placementCoins: number
   selectTerrain: (terrain: PlaceableTerrain) => void
   toggleNextPiece: (coords: Coords) => void
   confirmPlacement: () => void
@@ -60,6 +62,7 @@ const useGameStateBase = create<GameState>()(
     board: DefaultBoard,
     selectedTerrain: Water,
     nextPiece: new Set(),
+    placementCoins: 0,
     selectTerrain: (terrain: PlaceableTerrain) =>
       set(() => ({ selectedTerrain: terrain })),
 
@@ -76,12 +79,19 @@ const useGameStateBase = create<GameState>()(
         }
       }),
     confirmPlacement: () =>
-      set(({ nextPiece, selectedTerrain, board }) => {
+      set((state) => {
+        const { nextPiece, selectedTerrain, board } = state
         if (isLegalPlacement(nextPiece, selectedTerrain)) {
           nextPiece.forEach((coords) => {
             const [x, y] = fromCoords(coords)
             board[y][x] = selectedTerrain
           })
+          if (
+            selectedTerrain !== Monster &&
+            (nextPiece.size === 2 || nextPiece.size === 3)
+          ) {
+            state.placementCoins += 1
+          }
           nextPiece.clear()
         }
       }),
@@ -93,3 +103,31 @@ const useGameStateBase = create<GameState>()(
 )
 
 export const useGameState = createSelectors(useGameStateBase)
+
+function getMountainCoins(board: Board): number {
+  function isFilled(x: number, y: number): boolean {
+    return (
+      board[y][x] !== Empty &&
+      board[y][x] !== Ruins &&
+      board[y][x] !== undefined
+    )
+  }
+  return board
+    .map(
+      (row, y) =>
+        row.filter(
+          (cell, x) =>
+            cell === Mountain &&
+            isFilled(x - 1, y) &&
+            isFilled(x + 1, y) &&
+            isFilled(x, y - 1) &&
+            isFilled(x, y + 1)
+        ).length
+    )
+    .reduce((a, b) => a + b, 0)
+}
+
+export const useCoins = () => {
+  const { board, placementCoins } = useGameState()
+  return getMountainCoins(board) + placementCoins
+}

@@ -1,6 +1,6 @@
 import { CSSProperties, useState } from 'react'
 
-import { FaArrowRotateLeft, FaCoins, FaMinus, FaPlus } from 'react-icons/fa6'
+import { FaArrowRotateLeft, FaCoins } from 'react-icons/fa6'
 import Modal from 'react-modal'
 
 import Cell from './Cell'
@@ -9,7 +9,7 @@ import './app.css'
 import Button from './components/Button'
 import Expander from './components/Expander'
 import { isLegalPlacement } from './rules'
-import { toCoords, useGameState } from './state'
+import { toCoords, useCoins, useGameState } from './state'
 import { ColorMap, IconMap, LargeIconSize, SmallButtonSize } from './themes'
 import {
   Field,
@@ -39,14 +39,13 @@ const EmptyScores: Scores = {
 Modal.setAppElement('#root')
 
 export default function App() {
-  const [coins, setCoins] = useState(0)
-
   const board = useGameState.use.board()
   const selectedTerrain = useGameState.use.selectedTerrain()
   const selectTerrain = useGameState.use.selectTerrain()
   const nextPiece = useGameState.use.nextPiece()
   const confirmPlacement = useGameState.use.confirmPlacement()
   const clearPiece = useGameState.use.clearPiece()
+  const coins = useCoins()
 
   const [expandSpring, setExpandSpring] = useState(false)
   const [expandSummer, setExpandSummer] = useState(false)
@@ -162,21 +161,8 @@ export default function App() {
               alignItems: 'center',
             }}
           >
-            <Button
-              style={SmallButtonStyle}
-              onClick={() => setCoins((c) => Math.max(0, c - 1))}
-            >
-              <FaMinus size={LargeIconSize} />
-            </Button>
-
             <FaCoins />
             <span style={{ fontSize: '1.5rem', width: '1.5rem' }}>{coins}</span>
-            <Button
-              style={SmallButtonStyle}
-              onClick={() => setCoins(coins + 1)}
-            >
-              <FaPlus size={LargeIconSize} />
-            </Button>
           </div>
           <Expander />
           <Button
