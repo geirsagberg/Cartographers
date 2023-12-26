@@ -15,6 +15,17 @@ export type Scores = {
   monsters: number
 }
 
+export type Edict = {
+  id: number
+  type: EdictType
+  name: string
+  calculateScore: (board: Board) => number
+}
+
+export type Decree = 'A' | 'B' | 'C' | 'D'
+
+export type EdictType = 'green' | 'yellowblue' | 'red' | 'grey'
+
 export type Empty = typeof Empty
 export type Mountain = typeof Mountain
 export type Water = typeof Water

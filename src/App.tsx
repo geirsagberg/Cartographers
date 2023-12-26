@@ -3,6 +3,7 @@ import { CSSProperties } from 'react'
 import {
   FaArrowRotateLeft,
   FaCoins,
+  FaQuestion,
   FaSpaghettiMonsterFlying,
 } from 'react-icons/fa6'
 import Modal from 'react-modal'
@@ -55,14 +56,17 @@ export default function App() {
   const season = useGameState.use.season()
   const firstDecreeScore = useGameState.use.firstDecreeScore()
   const secondDecreeScore = useGameState.use.secondDecreeScore()
-  const setFirstDecreeScore = useGameState.use.setFirstDecreeScore()
-  const setSecondDecreeScore = useGameState.use.setSecondDecreeScore()
   const endSeason = useGameState.use.endSeason()
   const scores = useGameState.use.scores()
+  const selectEdict = useGameState.use.selectEdict()
+  const edicts = useGameState.use.edicts()
   const gameOver = useGameOver()
   const [firstDecree, secondDecree] = getDecrees(season)
   const coins = useCoins()
   const monsters = useMonsters()
+
+  const firstEdict = edicts[firstDecree]
+  const secondEdict = edicts[secondDecree]
 
   return (
     <div
@@ -159,35 +163,19 @@ export default function App() {
             }}
           >
             <span>{firstDecree}</span>
-            <input
-              style={{
-                width: '2rem',
-                height: '2rem',
-                background: 'rgba(0, 0, 0, 0.08)',
-                color: TextColor,
-              }}
-              disabled={gameOver}
-              type="number"
-              value={firstDecreeScore ?? ''}
-              onChange={(e) =>
-                setFirstDecreeScore(e.target.value ? +e.target.value : null)
-              }
-            />
+            <Button
+              style={SmallButtonStyle}
+              onClick={() => selectEdict(firstDecree)}
+            >
+              {firstEdict ? firstDecreeScore : <FaQuestion />}
+            </Button>
             <span>{secondDecree}</span>
-            <input
-              style={{
-                width: '2rem',
-                height: '2rem',
-                background: 'rgba(0, 0, 0, 0.08)',
-                color: TextColor,
-              }}
-              disabled={gameOver}
-              type="number"
-              value={secondDecreeScore ?? ''}
-              onChange={(e) =>
-                setSecondDecreeScore(e.target.value ? +e.target.value : null)
-              }
-            />
+            <Button
+              style={SmallButtonStyle}
+              onClick={() => selectEdict(secondDecree)}
+            >
+              {secondEdict ? secondDecreeScore : <FaQuestion />}
+            </Button>
           </div>
 
           <div
@@ -251,11 +239,10 @@ export default function App() {
               <ScoresView key={scores.season} scores={scores} />
             ))}
             <Expander />
-            {firstDecreeScore != null &&
-              secondDecreeScore != null &&
-              nextPiece.size === 0 && (
-                <Button onClick={endSeason}>End {season}</Button>
-              )}
+            {firstEdict != null &&
+              secondEdict != null &&
+              nextPiece.size === 0 &&
+              !gameOver && <Button onClick={endSeason}>End {season}</Button>}
             {gameOver && (
               <div
                 css={{
@@ -274,13 +261,6 @@ export default function App() {
                 </span>
               </div>
             )}
-          </div>
-          <div
-            style={{
-              fontSize: '1.5rem',
-            }}
-          >
-            {/* {(sum && <span>Sum: {sum}</span>) || <span>&nbsp;</span>} */}
           </div>
         </div>
       </div>

@@ -1,3 +1,5 @@
+import { create } from 'react-modal-promise'
+import Edicts from './components/Edicts'
 import { Scores } from './types'
 
 export function sumScores(scores: Scores): number {
@@ -8,3 +10,5 @@ export function sumScores(scores: Scores): number {
     (scores.monsters ?? 0)
   )
 }
+
+export const showEdicts = create(Edicts)
