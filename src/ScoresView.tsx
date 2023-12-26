@@ -18,6 +18,7 @@ export default function ScoresView({ scores }: { scores: Scores }) {
         flexDirection: 'column',
         alignItems: 'center',
         width: '4rem',
+        gap: '0.5rem',
       }}
       onClick={() => setExpanded(!expanded)}
     >
@@ -30,7 +31,6 @@ export default function ScoresView({ scores }: { scores: Scores }) {
             gap: '0.25rem',
             justifyItems: 'center',
             width: '100%',
-            marginTop: '0.5rem',
           }}
         >
           <span>{firstDecree}</span>

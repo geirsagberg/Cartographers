@@ -37,6 +37,7 @@ import {
   PlaceableTerrain,
   Water,
 } from './types'
+import { showEdict } from './utils'
 
 const SmallButtonStyle: CSSProperties = {
   width: SmallButtonSize,
@@ -89,9 +90,18 @@ export default function App() {
           flexDirection: 'column',
           gap: '1rem',
           width: 356,
-          height: 600,
+          height: 664,
         }}
       >
+        <div>
+          <h2
+            css={{
+              margin: '0.5rem 0',
+            }}
+          >
+            Cartographers
+          </h2>
+        </div>
         <div
           style={{
             display: 'grid',
@@ -170,14 +180,22 @@ export default function App() {
             <span>{firstDecree}</span>
             <Button
               style={SmallButtonStyle}
-              onClick={() => selectEdict(firstDecree)}
+              onClick={() =>
+                edicts[firstDecree]
+                  ? showEdict({ edictId: edicts[firstDecree]! })
+                  : selectEdict(firstDecree)
+              }
             >
               {firstEdict ? firstDecreeScore : <FaQuestion />}
             </Button>
             <span>{secondDecree}</span>
             <Button
               style={SmallButtonStyle}
-              onClick={() => selectEdict(secondDecree)}
+              onClick={() =>
+                edicts[secondDecree]
+                  ? showEdict({ edictId: edicts[secondDecree]! })
+                  : selectEdict(secondDecree)
+              }
             >
               {secondEdict ? secondDecreeScore : <FaQuestion />}
             </Button>
@@ -256,6 +274,8 @@ export default function App() {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
+                  gap: '0.5rem',
+                  width: 40,
                 }}
               >
                 <span>Sum</span>

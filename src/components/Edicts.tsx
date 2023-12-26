@@ -3,6 +3,7 @@ import { edicts } from '../rules'
 
 import { InstanceProps } from 'react-modal-promise'
 import { TextColor } from '../themes'
+import { getEdictUrl } from '../utils'
 
 interface EdictsProps extends InstanceProps<number> {
   currentEdict?: number | null
@@ -68,7 +69,7 @@ export default function Edicts({
                 boxShadow:
                   currentEdict === edict.id ? '0 0 2px 6px ' + TextColor : '',
               }}
-              src={`https://www.happymeeple.com/img/CTG/scoring/${edict.id}.jpg`}
+              src={getEdictUrl(edict.id)}
               alt={edict.name}
             />
           ))}
