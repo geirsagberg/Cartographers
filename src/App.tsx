@@ -1,12 +1,14 @@
 import { CSSProperties, useState } from 'react'
 
-import { FaCoins, FaMinus, FaPlus } from 'react-icons/fa6'
+import { FaArrowRotateLeft, FaCoins, FaMinus, FaPlus } from 'react-icons/fa6'
 import Modal from 'react-modal'
 
 import Cell from './Cell'
 import ScoresView, { TextColor } from './ScoresView'
 import './app.css'
 import Button from './components/Button'
+import Expander from './components/Expander'
+import { isLegalPlacement } from './rules'
 import { toCoords, useGameState } from './state'
 import { ColorMap, IconMap, LargeIconSize, SmallButtonSize } from './themes'
 import {
@@ -20,7 +22,7 @@ import {
 } from './types'
 import { sumScores } from './utils'
 
-const CoinButtonStyle: CSSProperties = {
+const SmallButtonStyle: CSSProperties = {
   width: SmallButtonSize,
   height: SmallButtonSize,
 }
@@ -44,6 +46,7 @@ export default function App() {
   const selectTerrain = useGameState.use.selectTerrain()
   const nextPiece = useGameState.use.nextPiece()
   const confirmPlacement = useGameState.use.confirmPlacement()
+  const clearPiece = useGameState.use.clearPiece()
 
   const [expandSpring, setExpandSpring] = useState(false)
   const [expandSummer, setExpandSummer] = useState(false)
@@ -102,7 +105,6 @@ export default function App() {
                   x={x}
                   y={y}
                   terrain={nextPiece.has(coords) ? selectedTerrain : terrain}
-                  isPlacing={nextPiece.has(coords)}
                 />
               )
             })
@@ -150,6 +152,7 @@ export default function App() {
             '& .button:active': {
               backgroundColor: 'rgba(0, 0, 0, 0.08)',
             },
+            gap: '1rem',
           }}
         >
           <div
@@ -160,7 +163,7 @@ export default function App() {
             }}
           >
             <Button
-              style={CoinButtonStyle}
+              style={SmallButtonStyle}
               onClick={() => setCoins((c) => Math.max(0, c - 1))}
             >
               <FaMinus size={LargeIconSize} />
@@ -168,11 +171,30 @@ export default function App() {
 
             <FaCoins />
             <span style={{ fontSize: '1.5rem', width: '1.5rem' }}>{coins}</span>
-            <Button style={CoinButtonStyle} onClick={() => setCoins(coins + 1)}>
+            <Button
+              style={SmallButtonStyle}
+              onClick={() => setCoins(coins + 1)}
+            >
               <FaPlus size={LargeIconSize} />
             </Button>
           </div>
-          <Button onClick={confirmPlacement}>Confirm</Button>
+          <Expander />
+          <Button
+            style={SmallButtonStyle}
+            disabled={!nextPiece.size}
+            onClick={clearPiece}
+          >
+            <FaArrowRotateLeft />
+          </Button>
+          <Button
+            disabled={!isLegalPlacement(nextPiece, selectedTerrain)}
+            onClick={confirmPlacement}
+            style={{
+              height: SmallButtonSize,
+            }}
+          >
+            Confirm
+          </Button>
         </div>
         <div
           style={{

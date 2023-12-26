@@ -2,25 +2,26 @@ import tinyColor from 'tinycolor2'
 import { TextColor } from './ScoresView'
 import { DefaultBoard, toCoords, useGameState } from './state'
 import { CellSize, ColorMap, IconMap, IconSize, RuinsColor } from './themes'
-import { Ruins, Terrain } from './types'
+import { Mountain, Ruins, Terrain } from './types'
 
 export interface CellProps {
   terrain: Terrain
   x: number
   y: number
-  isPlacing: boolean
 }
 
-export default function Cell({ x, y, terrain, isPlacing }: CellProps) {
+export default function Cell({ x, y, terrain }: CellProps) {
   const toggleNextPiece = useGameState.use.toggleNextPiece()
+  const nextPiece = useGameState.use.nextPiece()
   const coords = toCoords(x, y)
+  const isPlacing = nextPiece.has(coords)
   const color = tinyColor(ColorMap[terrain])
-  const selectedColor = (isPlacing ? color : color.darken(5)).toString()
+  const selectedColor = (isPlacing ? color : color.darken(0)).toString()
   return (
     <div
       onClick={() => toggleNextPiece(coords)}
       css={{
-        border: '0.5px solid ' + TextColor,
+        border: isPlacing ? 'none' : '0.5px solid ' + TextColor,
         backgroundColor: selectedColor,
         display: 'flex',
         justifyContent: 'center',
@@ -28,6 +29,7 @@ export default function Cell({ x, y, terrain, isPlacing }: CellProps) {
         position: 'relative',
         width: CellSize,
         height: CellSize,
+        // boxShadow: isPlacing ? '0 0 0 1px ' + TextColor : undefined,
       }}
     >
       {DefaultBoard[y][x] === Ruins && terrain !== Ruins && (
@@ -47,12 +49,37 @@ export default function Cell({ x, y, terrain, isPlacing }: CellProps) {
           color:
             terrain === Ruins
               ? RuinsColor
+              : terrain === Mountain
+              ? 'white'
               : isPlacing
               ? 'white'
-              : 'rgba(255,255,255, 0.5)',
+              : 'white',
         })
       ) : (
         <span css={{ width: IconSize, height: IconSize }}>&nbsp;</span>
+      )}
+      {isPlacing && (
+        <div
+          css={{
+            position: 'absolute',
+            width: CellSize,
+            height: CellSize,
+            border: '1px solid ' + TextColor,
+            boxSizing: 'content-box',
+            borderTopColor: nextPiece.has(toCoords(x, y - 1))
+              ? 'transparent'
+              : undefined,
+            borderBottomColor: nextPiece.has(toCoords(x, y + 1))
+              ? 'transparent'
+              : undefined,
+            borderLeftColor: nextPiece.has(toCoords(x - 1, y))
+              ? 'transparent'
+              : undefined,
+            borderRightColor: nextPiece.has(toCoords(x + 1, y))
+              ? 'transparent'
+              : undefined,
+          }}
+        />
       )}
     </div>
   )

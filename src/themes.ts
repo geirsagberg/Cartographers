@@ -1,28 +1,28 @@
 import {
   FaBuildingColumns,
-  FaMountain,
-  FaWater,
-  FaTree,
-  FaWheatAwn,
   FaHouse,
+  FaMountain,
   FaSpaghettiMonsterFlying,
+  FaTree,
+  FaWater,
+  FaWheatAwn,
 } from 'react-icons/fa6'
 import {
   Empty,
-  Ruins,
-  Mountain,
-  Water,
-  Forest,
   Field,
+  Forest,
   Hamlet,
   Monster,
+  Mountain,
+  Ruins,
+  Water,
 } from './types'
 
 export const IconSize = '1.25rem'
 
 export const LargeIconSize = '2rem'
 
-export const SmallButtonSize = '2rem'
+export const SmallButtonSize = 40
 
 export const CellSize = '2rem'
 

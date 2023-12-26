@@ -2,6 +2,7 @@ import { enableMapSet } from 'immer'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { createSelectors } from './createSelectors'
+import { isLegalPlacement } from './rules'
 import {
   Empty,
   Mountain,
@@ -37,6 +38,7 @@ interface GameState {
   selectTerrain: (terrain: PlaceableTerrain) => void
   toggleNextPiece: (coords: Coords) => void
   confirmPlacement: () => void
+  clearPiece: () => void
 }
 
 export const DefaultBoard: Terrain[][] = [
@@ -75,10 +77,16 @@ const useGameStateBase = create<GameState>()(
       }),
     confirmPlacement: () =>
       set(({ nextPiece, selectedTerrain, board }) => {
-        nextPiece.forEach((coords) => {
-          const [x, y] = fromCoords(coords)
-          board[y][x] = selectedTerrain
-        })
+        if (isLegalPlacement(nextPiece, selectedTerrain)) {
+          nextPiece.forEach((coords) => {
+            const [x, y] = fromCoords(coords)
+            board[y][x] = selectedTerrain
+          })
+          nextPiece.clear()
+        }
+      }),
+    clearPiece: () =>
+      set(({ nextPiece }) => {
         nextPiece.clear()
       }),
   }))

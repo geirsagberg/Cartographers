@@ -15,9 +15,10 @@ const buttonStyle: CSSObject = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  '&:active': {
+  '&:active:not(:disabled)': {
     backgroundColor: 'rgba(0, 0, 0, 0.08)',
   },
+  color: TextColor,
 }
 
 export default function Button({
@@ -33,6 +34,7 @@ export default function Button({
       onClick={onClick}
       css={{
         ...buttonStyle,
+        ...(disabled ? { opacity: 0.5 } : {}),
         ...style,
       }}
     >
