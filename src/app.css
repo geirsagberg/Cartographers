@@ -1,6 +1,7 @@
 html {
   font-family: MedievalSharp, sans-serif;
   color: #3f1700dd;
+  margin: 0;
 }
 
 .score-inputs {

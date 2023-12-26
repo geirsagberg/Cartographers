@@ -1,99 +1,31 @@
 import { CSSProperties, useState } from 'react'
 
-import {
-  FaBuildingColumns,
-  FaCoins,
-  FaHouse,
-  FaMinus,
-  FaMountain,
-  FaPlus,
-  FaSpaghettiMonsterFlying,
-  FaTree,
-  FaWater,
-  FaWheatAwn,
-} from 'react-icons/fa6'
+import { FaCoins, FaMinus, FaPlus } from 'react-icons/fa6'
 import Modal from 'react-modal'
 
+import Cell from './Cell'
+import ScoresView, { TextColor } from './ScoresView'
 import './app.css'
-import Scores from './Scores'
+import Button from './components/Button'
+import { toCoords, useGameState } from './state'
+import { ColorMap, IconMap, LargeIconSize, SmallButtonSize } from './themes'
+import {
+  Field,
+  Forest,
+  Hamlet,
+  Monster,
+  PlaceableTerrain,
+  Scores,
+  Water,
+} from './types'
 import { sumScores } from './utils'
-
-const Empty = 0
-const Mountain = 1
-const Water = 2
-const Forest = 3
-const Field = 4
-const Hamlet = 5
-const Monster = 6
-const Ruins = 7
-
-export const IconSize = '1.25rem'
-
-export const LargeIconSize = '2rem'
-
-export const SmallButtonSize = '2rem'
-
-export const CellSize = '2rem'
-
-export const TextColor = '#3f1700dd'
 
 const CoinButtonStyle: CSSProperties = {
   width: SmallButtonSize,
   height: SmallButtonSize,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
 }
 
-type Cell =
-  | typeof Empty
-  | typeof Mountain
-  | typeof Water
-  | typeof Forest
-  | typeof Field
-  | typeof Hamlet
-  | typeof Monster
-  | typeof Ruins
-
-const StartBoard: Cell[][] = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 7, 0, 0, 0, 0, 0],
-  [0, 7, 0, 0, 0, 0, 0, 0, 1, 7, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 7, 1, 0, 0, 0, 0, 0, 0, 7, 0],
-  [0, 0, 0, 0, 0, 7, 0, 1, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-
-const RuinsColor = '#3f170055'
-
-const ColorMap = {
-  [Empty]: 'rgba(0, 0, 0, 0.08)',
-  [Ruins]: 'rgba(0, 0, 0, 0.08)',
-  [Mountain]: '#16161662',
-  [Water]: '#075dc362',
-  [Forest]: '#1d510a62',
-  [Field]: '#d09a1062',
-  [Hamlet]: '#84100062',
-  [Monster]: '#59059662',
-}
-
-const IconMap = {
-  [Empty]: undefined,
-  [Ruins]: FaBuildingColumns,
-  [Mountain]: FaMountain,
-  [Water]: FaWater,
-  [Forest]: FaTree,
-  [Field]: FaWheatAwn,
-  [Hamlet]: FaHouse,
-  [Monster]: FaSpaghettiMonsterFlying,
-}
-
-const Selections: Cell[] = [Water, Forest, Field, Hamlet, Monster]
+const Selections: PlaceableTerrain[] = [Water, Forest, Field, Hamlet, Monster]
 
 const EmptyScores: Scores = {
   first: null,
@@ -105,11 +37,13 @@ const EmptyScores: Scores = {
 Modal.setAppElement('#root')
 
 export default function App() {
-  const [color, setColor] = useState<Cell>(Empty)
-
-  const [board, setBoard] = useState(StartBoard)
-
   const [coins, setCoins] = useState(0)
+
+  const board = useGameState.use.board()
+  const selectedTerrain = useGameState.use.selectedTerrain()
+  const selectTerrain = useGameState.use.selectTerrain()
+  const nextPiece = useGameState.use.nextPiece()
+  const confirmPlacement = useGameState.use.confirmPlacement()
 
   const [expandSpring, setExpandSpring] = useState(false)
   const [expandSummer, setExpandSummer] = useState(false)
@@ -160,50 +94,18 @@ export default function App() {
           }}
         >
           {board.map((row, y) =>
-            row.map((cell, x) => (
-              <div
-                key={`${x}-${y}`}
-                onClick={() => {
-                  if (cell === Mountain) return
-                  const newBoard = JSON.parse(JSON.stringify(board))
-                  newBoard[y][x] =
-                    color === Empty || color === cell ? StartBoard[y][x] : color
-                  setBoard(newBoard)
-                }}
-                style={{
-                  border: '0.5px solid ' + TextColor,
-                  backgroundColor: ColorMap[cell],
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  position: 'relative',
-                  width: CellSize,
-                  height: CellSize,
-                }}
-              >
-                {StartBoard[y][x] === Ruins && cell !== Ruins && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      backgroundColor: RuinsColor,
-                      width: '100%',
-                      height: '100%',
-                      zIndex: -1,
-                    }}
-                  />
-                )}
-                {IconMap[cell] ? (
-                  IconMap[cell]({
-                    size: IconSize,
-                    color: cell === Ruins ? RuinsColor : 'white',
-                  })
-                ) : (
-                  <span style={{ width: IconSize, height: IconSize }}>
-                    &nbsp;
-                  </span>
-                )}
-              </div>
-            ))
+            row.map((terrain, x) => {
+              const coords = toCoords(x, y)
+              return (
+                <Cell
+                  key={coords}
+                  x={x}
+                  y={y}
+                  terrain={nextPiece.has(coords) ? selectedTerrain : terrain}
+                  isPlacing={nextPiece.has(coords)}
+                />
+              )
+            })
           )}
         </div>
         <div
@@ -213,23 +115,24 @@ export default function App() {
             width: '100%',
           }}
         >
-          {Selections.map((cell: Cell) => (
+          {Selections.map((terrain: PlaceableTerrain) => (
             <div
-              key={cell}
+              key={terrain}
               style={{
-                backgroundColor: ColorMap[cell],
+                backgroundColor: ColorMap[terrain],
                 width: '3rem',
                 height: '3rem',
                 border: '2px solid ' + TextColor,
-                boxShadow: cell === color ? '0 0 0.5rem black' : undefined,
+                boxShadow:
+                  terrain === selectedTerrain ? '0 0 0.5rem black' : undefined,
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
-              onClick={() => setColor(cell)}
+              onClick={() => selectTerrain(terrain)}
             >
-              {IconMap[cell] ? (
-                IconMap[cell]({ size: LargeIconSize, color: 'white' })
+              {IconMap[terrain] ? (
+                IconMap[terrain]({ size: LargeIconSize, color: 'white' })
               ) : (
                 <span style={{ width: LargeIconSize, height: LargeIconSize }}>
                   &nbsp;
@@ -241,25 +144,35 @@ export default function App() {
         <div
           css={{
             display: 'flex',
-            gap: '0.5rem',
-            '& :active': {
+            justifyContent: 'space-between',
+            width: '100%',
+            alignItems: 'center',
+            '& .button:active': {
               backgroundColor: 'rgba(0, 0, 0, 0.08)',
             },
-            alignItems: 'center',
           }}
         >
           <div
-            style={CoinButtonStyle}
-            onClick={() => setCoins((c) => Math.max(0, c - 1))}
+            css={{
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'center',
+            }}
           >
-            <FaMinus size={LargeIconSize} />
-          </div>
+            <Button
+              style={CoinButtonStyle}
+              onClick={() => setCoins((c) => Math.max(0, c - 1))}
+            >
+              <FaMinus size={LargeIconSize} />
+            </Button>
 
-          <FaCoins />
-          <span style={{ fontSize: '1.5rem', width: '1.5rem' }}>{coins}</span>
-          <div style={CoinButtonStyle} onClick={() => setCoins(coins + 1)}>
-            <FaPlus size={LargeIconSize} />
+            <FaCoins />
+            <span style={{ fontSize: '1.5rem', width: '1.5rem' }}>{coins}</span>
+            <Button style={CoinButtonStyle} onClick={() => setCoins(coins + 1)}>
+              <FaPlus size={LargeIconSize} />
+            </Button>
           </div>
+          <Button onClick={confirmPlacement}>Confirm</Button>
         </div>
         <div
           style={{
@@ -279,7 +192,7 @@ export default function App() {
               alignItems: 'start',
             }}
           >
-            <Scores
+            <ScoresView
               setExpand={setExpandSpring}
               expand={expandSpring}
               scores={springScore}
@@ -288,7 +201,7 @@ export default function App() {
               firstLabel="A"
               secondLabel="B"
             />
-            <Scores
+            <ScoresView
               setExpand={setExpandSummer}
               expand={expandSummer}
               scores={summerScore}
@@ -297,7 +210,7 @@ export default function App() {
               firstLabel="B"
               secondLabel="C"
             />
-            <Scores
+            <ScoresView
               setExpand={setExpandFall}
               expand={expandFall}
               scores={fallScore}
@@ -306,7 +219,7 @@ export default function App() {
               firstLabel="C"
               secondLabel="D"
             />
-            <Scores
+            <ScoresView
               setExpand={setExpandWinter}
               expand={expandWinter}
               scores={winterScore}

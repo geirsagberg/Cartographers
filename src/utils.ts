@@ -1,3 +1,5 @@
+import { Scores } from './types'
+
 export function sumScores(scores: Scores): number {
   return (
     (scores.first ?? 0) +

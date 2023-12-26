@@ -1,6 +1,7 @@
 import { CSSProperties, Dispatch, SetStateAction } from 'react'
 import { FaCoins, FaSpaghettiMonsterFlying } from 'react-icons/fa6'
 import { sumScores } from './utils'
+import { Scores } from './types'
 
 export const TextColor = '#3f1700dd'
 
@@ -23,7 +24,7 @@ const ScoreInputStyle: CSSProperties = {
   background: 'rgba(0, 0, 0, 0.08)',
 }
 
-export default function Scores({
+export default function ScoresView({
   setExpand,
   expand,
   scores,
