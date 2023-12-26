@@ -244,6 +244,7 @@ export default function App() {
               justifyContent: 'space-between',
               gap: '1rem',
               width: '100%',
+              alignItems: 'start',
             }}
           >
             {scores.map((scores) => (
