@@ -21,7 +21,7 @@ export default function Cell({ x, y, terrain }: CellProps) {
     <div
       onClick={() => toggleNextPiece(coords)}
       css={{
-        border: isPlacing ? 'none' : '0.5px solid ' + TextColor,
+        border: isPlacing ? 'none' : '0.5px solid #3f170033',
         backgroundColor: selectedColor,
         display: 'flex',
         justifyContent: 'center',
