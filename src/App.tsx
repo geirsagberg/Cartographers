@@ -77,7 +77,7 @@ export default function App() {
         justifyContent: 'center',
         flexDirection: 'column',
         userSelect: 'none',
-        margin: '1rem 0',
+        height: '100dvh',
       }}
     >
       <div
@@ -88,6 +88,7 @@ export default function App() {
           flexDirection: 'column',
           gap: '1rem',
           width: 356,
+          height: 600,
         }}
       >
         <div
@@ -225,6 +226,7 @@ export default function App() {
             alignItems: 'center',
             gap: '0.5rem',
             width: '100%',
+            flex: 1,
           }}
         >
           <div
