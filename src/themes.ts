@@ -22,7 +22,7 @@ export const IconSize = '1.25rem'
 
 export const LargeIconSize = '2rem'
 
-export const SmallButtonSize = 40
+export const SmallButtonSize = '2rem'
 
 export const CellSize = '2rem'
 

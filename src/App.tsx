@@ -1,26 +1,40 @@
-import { CSSProperties, useState } from 'react'
+import { CSSProperties } from 'react'
 
-import { FaArrowRotateLeft, FaCoins } from 'react-icons/fa6'
+import {
+  FaArrowRotateLeft,
+  FaCoins,
+  FaSpaghettiMonsterFlying,
+} from 'react-icons/fa6'
 import Modal from 'react-modal'
 
 import Cell from './Cell'
-import ScoresView, { TextColor } from './ScoresView'
+import ScoresView from './ScoresView'
 import './app.css'
 import Button from './components/Button'
 import Expander from './components/Expander'
-import { isLegalPlacement } from './rules'
-import { toCoords, useCoins, useGameState } from './state'
-import { ColorMap, IconMap, LargeIconSize, SmallButtonSize } from './themes'
+import { getDecrees, isLegalPlacement } from './rules'
+import {
+  toCoords,
+  useCoins,
+  useGameOver,
+  useGameState,
+  useMonsters,
+} from './state'
+import {
+  ColorMap,
+  IconMap,
+  LargeIconSize,
+  SmallButtonSize,
+  TextColor,
+} from './themes'
 import {
   Field,
   Forest,
   Hamlet,
   Monster,
   PlaceableTerrain,
-  Scores,
   Water,
 } from './types'
-import { sumScores } from './utils'
 
 const SmallButtonStyle: CSSProperties = {
   width: SmallButtonSize,
@@ -28,13 +42,6 @@ const SmallButtonStyle: CSSProperties = {
 }
 
 const Selections: PlaceableTerrain[] = [Water, Forest, Field, Hamlet, Monster]
-
-const EmptyScores: Scores = {
-  first: null,
-  second: null,
-  coins: null,
-  monsters: null,
-}
 
 Modal.setAppElement('#root')
 
@@ -45,26 +52,17 @@ export default function App() {
   const nextPiece = useGameState.use.nextPiece()
   const confirmPlacement = useGameState.use.confirmPlacement()
   const clearPiece = useGameState.use.clearPiece()
+  const season = useGameState.use.season()
+  const firstDecreeScore = useGameState.use.firstDecreeScore()
+  const secondDecreeScore = useGameState.use.secondDecreeScore()
+  const setFirstDecreeScore = useGameState.use.setFirstDecreeScore()
+  const setSecondDecreeScore = useGameState.use.setSecondDecreeScore()
+  const endSeason = useGameState.use.endSeason()
+  const scores = useGameState.use.scores()
+  const gameOver = useGameOver()
+  const [firstDecree, secondDecree] = getDecrees(season)
   const coins = useCoins()
-
-  const [expandSpring, setExpandSpring] = useState(false)
-  const [expandSummer, setExpandSummer] = useState(false)
-  const [expandFall, setExpandFall] = useState(false)
-  const [expandWinter, setExpandWinter] = useState(false)
-  const [springScore, setSpringScore] = useState<Scores>(EmptyScores)
-  const [summerScore, setSummerScore] = useState<Scores>(EmptyScores)
-  const [fallScore, setFallScore] = useState<Scores>(EmptyScores)
-  const [winterScore, setWinterScore] = useState<Scores>(EmptyScores)
-
-  const sumSpring = sumScores(springScore)
-  const sumSummer = sumScores(summerScore)
-  const sumFall = sumScores(fallScore)
-  const sumWinter = sumScores(winterScore)
-
-  const sum =
-    sumSpring && sumSummer && sumFall && sumWinter
-      ? sumSpring + sumSummer + sumFall + sumWinter
-      : undefined
+  const monsters = useMonsters()
 
   return (
     <div
@@ -144,14 +142,13 @@ export default function App() {
         </div>
         <div
           css={{
-            display: 'flex',
+            display: gameOver ? 'none' : 'flex',
             justifyContent: 'space-between',
             width: '100%',
             alignItems: 'center',
             '& .button:active': {
               backgroundColor: 'rgba(0, 0, 0, 0.08)',
             },
-            gap: '1rem',
           }}
         >
           <div
@@ -161,26 +158,76 @@ export default function App() {
               alignItems: 'center',
             }}
           >
-            <FaCoins />
-            <span style={{ fontSize: '1.5rem', width: '1.5rem' }}>{coins}</span>
+            <span>{firstDecree}</span>
+            <input
+              style={{
+                width: '2rem',
+                height: '2rem',
+                background: 'rgba(0, 0, 0, 0.08)',
+                color: TextColor,
+              }}
+              disabled={gameOver}
+              type="number"
+              value={firstDecreeScore ?? ''}
+              onChange={(e) =>
+                setFirstDecreeScore(e.target.value ? +e.target.value : null)
+              }
+            />
+            <span>{secondDecree}</span>
+            <input
+              style={{
+                width: '2rem',
+                height: '2rem',
+                background: 'rgba(0, 0, 0, 0.08)',
+                color: TextColor,
+              }}
+              disabled={gameOver}
+              type="number"
+              value={secondDecreeScore ?? ''}
+              onChange={(e) =>
+                setSecondDecreeScore(e.target.value ? +e.target.value : null)
+              }
+            />
           </div>
-          <Expander />
-          <Button
-            style={SmallButtonStyle}
-            disabled={!nextPiece.size}
-            onClick={clearPiece}
-          >
-            <FaArrowRotateLeft />
-          </Button>
-          <Button
-            disabled={!isLegalPlacement(nextPiece, selectedTerrain)}
-            onClick={confirmPlacement}
-            style={{
-              height: SmallButtonSize,
+
+          <div
+            css={{
+              display: 'flex',
+              gap: '0.5rem',
             }}
           >
-            Confirm
-          </Button>
+            <FaCoins />
+            <span style={{ width: '1rem' }}>{coins}</span>
+            <FaSpaghettiMonsterFlying />
+            <span style={{ width: '1rem', whiteSpace: 'nowrap' }}>
+              -{monsters}
+            </span>
+          </div>
+          <div
+            css={{
+              display: 'flex',
+              gap: '1rem',
+            }}
+          >
+            <Button
+              style={SmallButtonStyle}
+              disabled={!nextPiece.size || gameOver}
+              onClick={clearPiece}
+            >
+              <FaArrowRotateLeft />
+            </Button>
+            <Button
+              disabled={
+                !isLegalPlacement(nextPiece, selectedTerrain) || gameOver
+              }
+              onClick={confirmPlacement}
+              style={{
+                height: SmallButtonSize,
+              }}
+            >
+              Confirm
+            </Button>
+          </div>
         </div>
         <div
           style={{
@@ -195,54 +242,44 @@ export default function App() {
             css={{
               display: 'flex',
               justifyContent: 'space-between',
-              gap: '0.5rem',
+              gap: '1rem',
               width: '100%',
-              alignItems: 'start',
             }}
           >
-            <ScoresView
-              setExpand={setExpandSpring}
-              expand={expandSpring}
-              scores={springScore}
-              setScores={setSpringScore}
-              label="Spring"
-              firstLabel="A"
-              secondLabel="B"
-            />
-            <ScoresView
-              setExpand={setExpandSummer}
-              expand={expandSummer}
-              scores={summerScore}
-              setScores={setSummerScore}
-              label="Summer"
-              firstLabel="B"
-              secondLabel="C"
-            />
-            <ScoresView
-              setExpand={setExpandFall}
-              expand={expandFall}
-              scores={fallScore}
-              setScores={setFallScore}
-              label="Fall"
-              firstLabel="C"
-              secondLabel="D"
-            />
-            <ScoresView
-              setExpand={setExpandWinter}
-              expand={expandWinter}
-              scores={winterScore}
-              setScores={setWinterScore}
-              label="Winter"
-              firstLabel="D"
-              secondLabel="A"
-            />
+            {scores.map((scores) => (
+              <ScoresView key={scores.season} scores={scores} />
+            ))}
+            <Expander />
+            {firstDecreeScore != null &&
+              secondDecreeScore != null &&
+              nextPiece.size === 0 && (
+                <Button onClick={endSeason}>End {season}</Button>
+              )}
+            {gameOver && (
+              <div
+                css={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
+                <span>Sum</span>
+                <span>
+                  {scores.reduce(
+                    (acc, { first, second, coins, monsters }) =>
+                      acc + first + second + coins - monsters,
+                    0
+                  )}
+                </span>
+              </div>
+            )}
           </div>
           <div
             style={{
               fontSize: '1.5rem',
             }}
           >
-            {(sum && <span>Sum: {sum}</span>) || <span>&nbsp;</span>}
+            {/* {(sum && <span>Sum: {sum}</span>) || <span>&nbsp;</span>} */}
           </div>
         </div>
       </div>

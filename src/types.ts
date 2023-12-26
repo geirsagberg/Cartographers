@@ -8,10 +8,11 @@ export const Monster = 'A'
 export const Ruins = 'R'
 
 export type Scores = {
-  first: number | null
-  second: number | null
-  coins: number | null
-  monsters: number | null
+  season: Season
+  first: number
+  second: number
+  coins: number
+  monsters: number
 }
 
 export type Empty = typeof Empty
@@ -34,3 +35,9 @@ export type Terrain =
   | Ruins
 
 export type PlaceableTerrain = Forest | Field | Hamlet | Monster | Water
+
+export type Board = Terrain[][]
+
+export type Coords = `${number},${number}`
+
+export type Season = 'Spring' | 'Summer' | 'Fall' | 'Winter'

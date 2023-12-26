@@ -1,115 +1,49 @@
-import { CSSProperties, Dispatch, SetStateAction } from 'react'
+import { useState } from 'react'
 import { FaCoins, FaSpaghettiMonsterFlying } from 'react-icons/fa6'
-import { sumScores } from './utils'
+import { getDecrees } from './rules'
 import { Scores } from './types'
 
-export const TextColor = '#3f1700dd'
+export default function ScoresView({ scores }: { scores: Scores }) {
+  const [expanded, setExpanded] = useState(false)
 
-const ScoreStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '0.5rem',
-  width: '5rem',
-  position: 'relative',
-  border: '2px solid ' + TextColor,
-  padding: '0.5rem',
-}
+  const { season, first, second, coins, monsters } = scores
 
-const ScoreInputStyle: CSSProperties = {
-  color: TextColor,
-  width: '3rem',
-  fontSize: '1rem',
-  textAlign: 'center',
-  background: 'rgba(0, 0, 0, 0.08)',
-}
+  const [firstDecree, secondDecree] = getDecrees(season)
 
-export default function ScoresView({
-  setExpand,
-  expand,
-  scores,
-  setScores,
-  label,
-  firstLabel,
-  secondLabel,
-}: {
-  setExpand: Dispatch<SetStateAction<boolean>>
-  expand: boolean
-  scores: Scores
-  setScores: Dispatch<SetStateAction<Scores>>
-  label: string
-  firstLabel: string
-  secondLabel: string
-}) {
   return (
     <div
-      style={ScoreStyle}
-      onClick={(e) =>
-        !(e.target instanceof HTMLInputElement) && setExpand((e: boolean) => !e)
-      }
+      key={season}
+      css={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: '4rem',
+      }}
+      onClick={() => setExpanded(!expanded)}
     >
-      <div
-        style={{
-          whiteSpace: 'nowrap',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        {label}
-      </div>
-      {expand ? (
-        <div className="score-inputs">
-          <div>{firstLabel}</div>
-          <input
-            type="number"
-            style={ScoreInputStyle}
-            value={scores.first ?? ''}
-            onChange={(e) =>
-              setScores((score) => ({
-                ...score,
-                first: e.target.value ? +e.target.value : null,
-              }))
-            }
-          />
-          <div>{secondLabel}</div>
-          <input
-            type="number"
-            style={ScoreInputStyle}
-            value={scores.second ?? ''}
-            onChange={(e) =>
-              setScores((score) => ({
-                ...score,
-                second: e.target.value ? +e.target.value : null,
-              }))
-            }
-          />
+      <span>{season}</span>
+      {expanded ? (
+        <div
+          css={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '0.25rem',
+            justifyItems: 'center',
+            width: '100%',
+            marginTop: '0.5rem',
+          }}
+        >
+          <span>{firstDecree}</span>
+          <span>{first}</span>
+          <span>{secondDecree}</span>
+          <span>{second}</span>
           <FaCoins />
-          <input
-            type="number"
-            style={ScoreInputStyle}
-            value={scores.coins ?? ''}
-            onChange={(e) =>
-              setScores((score) => ({
-                ...score,
-                coins: e.target.value ? +e.target.value : null,
-              }))
-            }
-          />
+          <span>{coins}</span>
           <FaSpaghettiMonsterFlying />
-          <input
-            type="number"
-            style={ScoreInputStyle}
-            value={scores.monsters ?? ''}
-            onChange={(e) =>
-              setScores((score) => ({
-                ...score,
-                monsters: e.target.value ? +e.target.value : null,
-              }))
-            }
-          />
+          <span>{monsters}</span>
         </div>
       ) : (
-        <div>{sumScores(scores)}</div>
+        <span>{first + second + coins - monsters}</span>
       )}
     </div>
   )

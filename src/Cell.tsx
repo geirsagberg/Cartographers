@@ -1,7 +1,13 @@
 import tinyColor from 'tinycolor2'
-import { TextColor } from './ScoresView'
 import { DefaultBoard, toCoords, useGameState } from './state'
-import { CellSize, ColorMap, IconMap, IconSize, RuinsColor } from './themes'
+import {
+  CellSize,
+  ColorMap,
+  IconMap,
+  IconSize,
+  RuinsColor,
+  TextColor,
+} from './themes'
 import { Mountain, Ruins, Terrain } from './types'
 
 export interface CellProps {

@@ -1,6 +1,6 @@
 import { CSSObject } from '@emotion/react'
 import { PropsWithChildren } from 'react'
-import { TextColor } from '../ScoresView'
+import { TextColor } from '../themes'
 
 export interface ButtonProps extends PropsWithChildren {
   onClick?: () => void
