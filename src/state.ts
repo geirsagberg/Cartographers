@@ -321,7 +321,7 @@ function isLegalPlacement(state: GameState): boolean {
   if (isMonsterCard(currentCard) && selectedTerrain !== Monster) {
     return false
   }
-  if (isRuinsCard(currentCard) && nextPiece.size > 0) {
+  if (isRuinsCard(currentCard) && nextPiece.size === 0) {
     return true
   }
   if (seasonTime >= maxTime) {
@@ -331,9 +331,28 @@ function isLegalPlacement(state: GameState): boolean {
     if (!selectedTerrain || !currentCard.terrains.includes(selectedTerrain)) {
       return false
     }
-    return nextPiece.size > 0 && nextPiece.size <= 5
+    return currentCard.shapes.some((shape) => matchesShape(shape, nextPiece))
   }
   return false
+}
+
+function matchesShape(shape: Set<Coords>, piece: Set<Coords>): boolean {
+  return shape.size === piece.size
+  // if (shape.size !== piece.size) {
+  //   return false
+  // }
+  // const minX = Math.min(...[...shape].map(fromCoords).map(([x]) => x))
+  // const minY = Math.min(...[...shape].map(fromCoords).map(([, y]) => y))
+  // const normalizedPiece = new Set(
+  //   [...piece]
+  //     .map(fromCoords)
+  //     .map(([x, y]) => [x - minX, y - minY])
+  //     .map(([x, y]) => toCoords(x, y))
+  // )
+  // const shapeVariations: Set<Coords>[] = [shape]
+  // const shapeXY = [...shape].map(fromCoords)
+
+  // return true
 }
 
 export const useCurrentCard = () => {
