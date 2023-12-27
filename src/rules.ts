@@ -102,7 +102,7 @@ const monsterCards: MonsterCard[] = [
   {
     id: '03',
     name: 'Kobold Onslaught',
-    shapes: [new Set(['0,0', '0,1', '1,0', '1,1', '0,2'])],
+    shapes: [new Set(['0,0', '0,1', '1,1', '0,2'])],
     terrains: [Monster],
     isMonster: true,
   },

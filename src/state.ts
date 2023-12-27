@@ -331,10 +331,15 @@ function isLegalPlacement(state: GameState): boolean {
     if (!selectedTerrain || !currentCard.terrains.includes(selectedTerrain)) {
       return false
     }
-    return currentCard.shapes.some((shape) => matchesShape(shape, nextPiece))
+    return (
+      currentCard.shapes.some((shape) => matchesShape(shape, nextPiece)) ||
+      nextPiece.size === 1 // To handle when the shape is not placeable
+    )
   }
   return false
 }
+
+// function rotateAndNormalizeShape(shape: Set<Coords>): Set<Coords> {}
 
 function matchesShape(shape: Set<Coords>, piece: Set<Coords>): boolean {
   return shape.size === piece.size
