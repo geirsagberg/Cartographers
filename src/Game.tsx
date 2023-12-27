@@ -95,6 +95,11 @@ export default function Game() {
             key={decree}
             css={{
               position: 'relative',
+              display: 'flex',
+              boxShadow: [firstEdict, secondEdict].includes(edictId)
+                ? '0 0 0.5rem black'
+                : undefined,
+              opacity: [firstEdict, secondEdict].includes(edictId) ? 1 : 0.5,
             }}
             onClick={() => showEdict({ edictId })}
           >

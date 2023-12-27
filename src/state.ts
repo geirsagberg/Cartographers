@@ -4,7 +4,9 @@ import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { createSelectors } from './createSelectors'
 import {
+  Card,
   edictsById,
+  getCardsPerSeason,
   getDecrees,
   getRandomEdicts,
   isLegalPlacement,
@@ -51,6 +53,7 @@ interface GameState {
   firstDecreeScore: number
   secondDecreeScore: number
   edicts: Record<Decree, number>
+  cardsPerSeason: Record<Season, Card[]>
   selectTerrain: (terrain: PlaceableTerrain) => void
   toggleNextPiece: (coords: Coords) => void
   confirmPlacement: () => void
@@ -88,6 +91,14 @@ const initialState = {
         B: 0,
         C: 0,
         D: 0,
+      },
+  cardsPerSeason: gameCode
+    ? getCardsPerSeason(gameCode)
+    : {
+        Spring: [],
+        Summer: [],
+        Fall: [],
+        Winter: [],
       },
   gameCode,
   selectedTerrain: Water,
@@ -178,12 +189,14 @@ const useGameStateBase = create<GameState>()(
         location.hash = code
 
         const edicts = getRandomEdicts(code)
+        const cardsPerSeason = getCardsPerSeason(code)
 
         set(() => ({
           gameCode: code,
           season: 'Spring',
           scores: [],
           edicts,
+          cardsPerSeason,
           selectedTerrain: Water,
           firstDecreeScore: 0,
           secondDecreeScore: 0,
