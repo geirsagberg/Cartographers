@@ -2,6 +2,7 @@ import { CSSProperties } from 'react'
 
 import {
   FaArrowRotateLeft,
+  FaClock,
   FaCoins,
   FaSpaghettiMonsterFlying,
 } from 'react-icons/fa6'
@@ -12,12 +13,13 @@ import ScoresView from './ScoresView'
 import './app.css'
 import Button from './components/Button'
 import Expander from './components/Expander'
-import { getDecrees, isLegalPlacement } from './rules'
+import { getDecrees, getMaxTime, isShapeCard, toCoords } from './rules'
 import {
-  toCoords,
   useCoins,
+  useCurrentCard,
   useGameOver,
   useGameState,
+  useLegalPlacement,
   useMonsters,
 } from './state'
 import {
@@ -35,7 +37,7 @@ import {
   PlaceableTerrain,
   Water,
 } from './types'
-import { getEdictUrl, showEdict, showMenu } from './utils'
+import { getCardUrl, getEdictUrl, showCard, showEdict, showMenu } from './utils'
 
 const SmallButtonStyle: CSSProperties = {
   width: SmallButtonSize,
@@ -58,13 +60,22 @@ export default function Game() {
   const scores = useGameState.use.scores()
   const edicts = useGameState.use.edicts()
   const resetGame = useGameState.use.resetGame()
+  const seasonTime = useGameState.use.seasonTime()
+  const maxTime = getMaxTime(season)
   const gameOver = useGameOver()
+  const legalPlacement = useLegalPlacement()
   const [firstDecree, secondDecree] = getDecrees(season)
   const coins = useCoins()
   const monsters = useMonsters()
+  const currentCard = useCurrentCard()
 
   const firstEdict = edicts[firstDecree]
   const secondEdict = edicts[secondDecree]
+
+  const legalTerrain =
+    seasonTime < maxTime && !gameOver && isShapeCard(currentCard)
+      ? currentCard.terrains
+      : []
 
   return (
     <div
@@ -82,52 +93,109 @@ export default function Game() {
         css={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'start',
+          alignItems: 'stretch',
           width: '100%',
           gap: '0.5rem',
           paddingTop: '0.5rem',
+          height: 70,
         }}
       >
-        <Button onClick={showMenu}>Menu</Button>
-        <Expander />
-        {Object.entries(edicts).map(([decree, edictId]) => (
-          <div
-            key={decree}
-            css={{
-              position: 'relative',
-              display: 'flex',
-              boxShadow: [firstEdict, secondEdict].includes(edictId)
-                ? '0 0 0.5rem black'
-                : undefined,
-              opacity: [firstEdict, secondEdict].includes(edictId) ? 1 : 0.5,
+        <div
+          css={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Button
+            style={{
+              height: '2rem',
             }}
-            onClick={() => showEdict({ edictId })}
+            onClick={showMenu}
           >
+            Menu
+          </Button>
+          {gameOver ? (
+            <div />
+          ) : (
+            <div>
+              <FaClock />
+              &nbsp;
+              {seasonTime}/{maxTime}
+            </div>
+          )}
+        </div>
+
+        <div
+          css={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {currentCard && seasonTime < maxTime && (
             <img
-              src={getEdictUrl(edictId)}
               css={{
                 width: '3rem',
               }}
-              alt="edict"
+              src={getCardUrl(currentCard.id)}
+              alt={currentCard.name}
+              onClick={() => showCard(currentCard.id)}
             />
-            <span
+          )}
+        </div>
+        {gameOver ? (
+          <Button
+            style={{
+              alignSelf: 'start',
+              height: '2rem',
+            }}
+            onClick={resetGame}
+          >
+            New Game
+          </Button>
+        ) : (
+          Object.entries(edicts).map(([decree, edictId]) => (
+            <div
+              key={decree}
               css={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                fontSize: '2rem',
-                width: '100%',
-                height: '100%',
+                position: 'relative',
                 display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: 'white',
+                boxShadow: [firstEdict, secondEdict].includes(edictId)
+                  ? '0 0 0.5rem black'
+                  : undefined,
+                opacity: [firstEdict, secondEdict].includes(edictId) ? 1 : 0.5,
               }}
+              onClick={() => showEdict(edictId)}
             >
-              {decree}
-            </span>
-          </div>
-        ))}
+              <img
+                src={getEdictUrl(edictId)}
+                css={{
+                  width: '3rem',
+                }}
+                alt="edict"
+              />
+              <span
+                css={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  fontSize: '2rem',
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  color: 'white',
+                }}
+              >
+                {decree}
+              </span>
+            </div>
+          ))
+        )}
       </div>
       <div
         style={{
@@ -144,7 +212,11 @@ export default function Game() {
                 key={coords}
                 x={x}
                 y={y}
-                terrain={nextPiece.has(coords) ? selectedTerrain : terrain}
+                terrain={
+                  nextPiece.has(coords) && selectedTerrain
+                    ? selectedTerrain
+                    : terrain
+                }
               />
             )
           })
@@ -173,8 +245,11 @@ export default function Game() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
+              opacity: legalTerrain.includes(terrain) ? 1 : 0.5,
             }}
-            onClick={() => selectTerrain(terrain)}
+            onClick={() =>
+              legalTerrain.includes(terrain) && selectTerrain(terrain)
+            }
           >
             {IconMap[terrain] ? (
               IconMap[terrain]({ size: LargeIconSize, color: 'white' })
@@ -246,7 +321,7 @@ export default function Game() {
             <FaArrowRotateLeft />
           </Button>
           <Button
-            disabled={!isLegalPlacement(nextPiece, selectedTerrain) || gameOver}
+            disabled={!legalPlacement || gameOver}
             onClick={confirmPlacement}
             style={{
               height: SmallButtonSize,
@@ -279,10 +354,9 @@ export default function Game() {
             <ScoresView key={scores.season} scores={scores} />
           ))}
           <Expander />
-          {firstEdict != null &&
-            secondEdict != null &&
-            nextPiece.size === 0 &&
-            !gameOver && <Button onClick={endSeason}>End {season}</Button>}
+          {seasonTime >= maxTime && !gameOver && (
+            <Button onClick={endSeason}>End {season}</Button>
+          )}
           {gameOver && (
             <div
               css={{
@@ -304,7 +378,6 @@ export default function Game() {
             </div>
           )}
         </div>
-        {gameOver && <Button onClick={resetGame}>New Game</Button>}
       </div>
     </div>
   )

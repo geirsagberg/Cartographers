@@ -1,5 +1,6 @@
 import tinyColor from 'tinycolor2'
-import { DefaultBoard, toCoords, useGameState } from './state'
+import { DefaultBoard, toCoords } from './rules'
+import { useGameState } from './state'
 import {
   CellSize,
   ColorMap,
@@ -19,13 +20,14 @@ export interface CellProps {
 export default function Cell({ x, y, terrain }: CellProps) {
   const toggleNextPiece = useGameState.use.toggleNextPiece()
   const nextPiece = useGameState.use.nextPiece()
+  const selectedTerrain = useGameState.use.selectedTerrain()
   const coords = toCoords(x, y)
   const isPlacing = nextPiece.has(coords)
   const color = tinyColor(ColorMap[terrain])
   const selectedColor = (isPlacing ? color.lighten(5) : color).toString()
   return (
     <div
-      onClick={() => toggleNextPiece(coords)}
+      onClick={() => selectedTerrain && toggleNextPiece(coords)}
       css={{
         border: isPlacing ? 'none' : '0.5px solid #3f170033',
         backgroundColor: selectedColor,

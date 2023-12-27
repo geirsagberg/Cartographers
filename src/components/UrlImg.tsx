@@ -1,11 +1,10 @@
 import { InstanceProps } from 'react-modal-promise'
-import { getEdictUrl } from '../utils'
 
-interface EdictProps extends InstanceProps<void> {
-  edictId: number
+interface UrlImgProps extends InstanceProps<void> {
+  url: string
 }
 
-export default function Edict({ isOpen, onResolve, edictId }: EdictProps) {
+export default function UrlImg({ isOpen, onResolve, url }: UrlImgProps) {
   if (!isOpen) {
     return null
   }
@@ -31,8 +30,7 @@ export default function Edict({ isOpen, onResolve, edictId }: EdictProps) {
           style={{
             width: 356,
           }}
-          src={getEdictUrl(edictId)}
-          alt="edict"
+          src={url}
         />
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { DefaultBoard, fromCoords, toCoords } from './state'
 import {
   Board,
   Coords,
@@ -20,12 +19,32 @@ import {
 
 import random from 'seedrandom'
 
-export function isLegalPlacement(
-  piece: Set<Coords>,
-  _terrain: PlaceableTerrain
-): boolean {
-  return piece.size > 0 && piece.size <= 5
+const E = Empty
+const M = Mountain
+const R = Ruins
+
+export function toCoords(x: number, y: number): Coords {
+  return `${x},${y}`
 }
+
+export function fromCoords(coords: Coords): [number, number] {
+  const [x, y] = coords.split(',').map(Number)
+  return [x, y]
+}
+
+export const DefaultBoard: Terrain[][] = [
+  [E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, M, E, R, E, E, E, E, E],
+  [E, R, E, E, E, E, E, E, M, R, E],
+  [E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, M, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E],
+  [E, R, M, E, E, E, E, E, E, R, E],
+  [E, E, E, E, E, R, E, M, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E],
+]
 
 export type Card = {
   id: string
@@ -49,12 +68,20 @@ type ExploreCard = ShapeCard & {
   time: number
 }
 
-function isExploreCard(card: Card): card is ExploreCard {
-  return 'time' in card
+export function isExploreCard(card: Card | null): card is ExploreCard {
+  return card != null && 'time' in card
 }
 
-function isMonsterCard(card: Card): card is MonsterCard {
-  return 'isMonster' in card
+export function isMonsterCard(card: Card | null): card is MonsterCard {
+  return card != null && 'isMonster' in card
+}
+
+export function isRuinsCard(card: Card | null): card is RuinsCard {
+  return card != null && 'isRuins' in card
+}
+
+export function isShapeCard(card: Card | null): card is ShapeCard {
+  return card != null && 'shapes' in card
 }
 
 const monsterCards: MonsterCard[] = [
@@ -142,28 +169,28 @@ const exploreCards: ExploreCard[] = [
   {
     id: '11',
     name: 'Hinterland Stream',
-    terrains: [Field, Water],
+    terrains: [Water, Field],
     time: 2,
     shapes: [new Set(['0,0', '1,0', '2,0', '0,1', '0,2'])],
   },
   {
     id: '12',
     name: 'Homestead',
-    terrains: [Hamlet, Field],
+    terrains: [Field, Hamlet],
     time: 2,
     shapes: [new Set(['0,0', '0,1', '1,1', '0,2'])],
   },
   {
     id: '13',
     name: 'Orchard',
-    terrains: [Field, Forest],
+    terrains: [Forest, Field],
     time: 2,
     shapes: [new Set(['0,0', '1,0', '2,0', '2,1'])],
   },
   {
     id: '14',
     name: 'Treetop Village',
-    terrains: [Hamlet, Forest],
+    terrains: [Forest, Hamlet],
     time: 2,
     shapes: [new Set(['2,0', '3,0', '0,1', '1,1', '1,2'])],
   },
@@ -177,14 +204,14 @@ const exploreCards: ExploreCard[] = [
   {
     id: '16',
     name: 'Fishing Village',
-    terrains: [Hamlet, Water],
+    terrains: [Water, Hamlet],
     time: 2,
     shapes: [new Set(['0,0', '1,0', '2,0', '3,0'])],
   },
   {
     id: '17',
     name: 'Rift Lands',
-    terrains: [Forest, Hamlet, Field, Water, Monster],
+    terrains: [Water, Forest, Field, Hamlet, Monster],
     time: 0,
     shapes: [new Set(['0,0'])],
   },
@@ -701,7 +728,7 @@ function getCardsForSeason(
   )
   const cardsForSeason: Card[] = []
   let time = 0
-  const maxTime = getTime(season)
+  const maxTime = getMaxTime(season)
   while (time < maxTime) {
     const card = cards.pop()!
     cardsForSeason.push(card)
@@ -751,7 +778,7 @@ function shuffleArray<T>(array: T[], rng: random.PRNG): T[] {
   return shuffled
 }
 
-export function getTime(season: Season): number {
+export function getMaxTime(season: Season | null): number {
   switch (season) {
     case 'Spring':
     case 'Summer':
@@ -760,5 +787,7 @@ export function getTime(season: Season): number {
       return 7
     case 'Winter':
       return 6
+    default:
+      return 0
   }
 }
