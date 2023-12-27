@@ -1,12 +1,6 @@
 import { CSSObject } from '@emotion/react'
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, forwardRef } from 'react'
 import { TextColor } from '../themes'
-
-export interface ButtonProps extends PropsWithChildren {
-  onClick?: () => void
-  disabled?: boolean
-  style?: React.CSSProperties
-}
 
 const buttonStyle: CSSObject = {
   backgroundColor: 'transparent',
@@ -21,15 +15,21 @@ const buttonStyle: CSSObject = {
   color: TextColor,
 }
 
-export default function Button({
-  children,
-  onClick,
-  disabled,
-  style,
-}: ButtonProps) {
+export interface ButtonProps extends PropsWithChildren {
+  onClick?: () => void
+  disabled?: boolean
+  style?: React.CSSProperties
+  type?: 'button' | 'submit' | 'reset'
+}
+
+export default forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { children, onClick, disabled, style, type = 'button' }: ButtonProps,
+  ref
+) {
   return (
     <button
-      type="button"
+      ref={ref}
+      type={type}
       disabled={disabled}
       onClick={onClick}
       css={{
@@ -41,4 +41,4 @@ export default function Button({
       {children}
     </button>
   )
-}
+})

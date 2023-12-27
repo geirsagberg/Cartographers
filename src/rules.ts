@@ -17,6 +17,8 @@ import {
   Water,
 } from './types'
 
+import random from 'seedrandom'
+
 export function isLegalPlacement(
   piece: Set<Coords>,
   _terrain: PlaceableTerrain
@@ -494,3 +496,35 @@ export const edictsById = edicts.reduce((acc, edict) => {
   acc[edict.id] = edict
   return acc
 }, {} as Record<number, Edict>)
+
+export function getRandomEdicts(seed: string): Record<Decree, number> {
+  const rng = random(seed)
+  const types = shuffleArray(['green', 'yellowblue', 'red', 'grey'], rng)
+  const A = shuffleArray(
+    edicts.filter((e) => e.type === types[0]),
+    rng
+  )[0].id
+  const B = shuffleArray(
+    edicts.filter((e) => e.type === types[1]),
+    rng
+  )[0].id
+  const C = shuffleArray(
+    edicts.filter((e) => e.type === types[2]),
+    rng
+  )[0].id
+  const D = shuffleArray(
+    edicts.filter((e) => e.type === types[3]),
+    rng
+  )[0].id
+
+  return { A, B, C, D }
+}
+
+function shuffleArray<T>(array: T[], rng: random.PRNG): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}

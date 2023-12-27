@@ -1,6 +1,7 @@
 import { create } from 'react-modal-promise'
 import Edict from './components/Edict'
 import Edicts from './components/Edicts'
+import Menu from './components/Menu'
 import { Scores } from './types'
 
 export function sumScores(scores: Scores): number {
@@ -15,6 +16,8 @@ export function sumScores(scores: Scores): number {
 export const showEdicts = create(Edicts)
 
 export const showEdict = create(Edict)
+
+export const showMenu = create(Menu)
 
 export function getEdictUrl(id: number): string {
   return `https://www.happymeeple.com/img/CTG/scoring/${id}.jpg`

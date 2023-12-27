@@ -24,6 +24,7 @@ export default function Edict({ isOpen, onResolve, edictId }: EdictProps) {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         zIndex: 9999,
       }}
+      onClick={() => onResolve()}
     >
       <div>
         <img
@@ -32,7 +33,6 @@ export default function Edict({ isOpen, onResolve, edictId }: EdictProps) {
           }}
           src={getEdictUrl(edictId)}
           alt="edict"
-          onClick={() => onResolve()}
         />
       </div>
     </div>
