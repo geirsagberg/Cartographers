@@ -13,16 +13,9 @@ import ScoresView from './ScoresView'
 import './app.css'
 import Button from './components/Button'
 import Expander from './components/Expander'
-import { getDecrees, getMaxTime } from './rules/constants'
+import { getDecrees } from './rules/constants'
 import { toCoords } from './rules/utils'
-import {
-  useCoins,
-  useCurrentCard,
-  useGameOver,
-  useGameState,
-  useLegalPlacement,
-  useMonsters,
-} from './state'
+import { useGameState } from './state'
 import {
   ColorMap,
   IconMap,
@@ -62,13 +55,13 @@ export default function Game() {
   const resetGame = useGameState.use.resetGame()
   const seasonTime = useGameState.use.seasonTime()
   const scoresByDecree = useGameState.use.scoresByDecree()
-  const maxTime = getMaxTime(season)
-  const gameOver = useGameOver()
-  const legalPlacement = useLegalPlacement()
+  const maxTime = useGameState.use.maxTime()
+  const gameOver = useGameState.use.gameOver()
+  const legalPlacement = useGameState.use.legalPlacement()
+  const coins = useGameState.use.totalCoins()
+  const monsters = useGameState.use.monsterScore()
+  const currentCard = useGameState.use.currentCard()
   const [firstDecree, secondDecree] = getDecrees(season)
-  const coins = useCoins()
-  const monsters = useMonsters()
-  const currentCard = useCurrentCard()
 
   const firstEdict = edicts[firstDecree]
   const secondEdict = edicts[secondDecree]

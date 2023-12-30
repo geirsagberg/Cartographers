@@ -13,7 +13,6 @@ export default function App() {
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
-        userSelect: 'none',
         height: '100dvh',
       }}
     >

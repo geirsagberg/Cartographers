@@ -25,14 +25,12 @@ export default function UrlImg({ isOpen, onResolve, url }: UrlImgProps) {
       }}
       onClick={() => onResolve()}
     >
-      <div>
-        <img
-          style={{
-            width: 356,
-          }}
-          src={url}
-        />
-      </div>
+      <img
+        style={{
+          width: 356,
+        }}
+        src={url}
+      />
     </div>
   )
 }

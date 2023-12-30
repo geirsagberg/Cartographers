@@ -2,6 +2,8 @@ import { enableMapSet } from 'immer'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
+
+import compute from 'zustand-computed'
 import { createSelectors } from './createSelectors'
 import { getGameSetup } from './rules'
 import { getDecrees, getMaxTime } from './rules/constants'
@@ -36,7 +38,7 @@ interface GameState {
   board: Board
   selectedTerrain: PlaceableTerrain | null
   nextPiece: Set<Coords>
-  currentCard: number
+  currentCardIndex: number
   seasonTime: number
   scores: Scores[]
   placementCoins: number
@@ -63,7 +65,7 @@ const getInitialState = (gameCode: string | null) => {
     board: initialBoard,
     season: 'Spring',
     scores: [],
-    currentCard: 0,
+    currentCardIndex: 0,
     seasonTime: 0,
     edictsByDecree,
     cardsPerSeason,
@@ -80,139 +82,162 @@ const getInitialState = (gameCode: string | null) => {
   } satisfies Partial<GameState>
 }
 
+const computeState = (state: GameState) => ({
+  totalCoins: getMountainCoins(state.board) + state.placementCoins,
+  currentCard: getCurrentCard(state),
+  maxTime: getMaxTime(state.season),
+  legalPlacement: isLegalPlacement(state),
+  gameOver: state.scores.length === 4,
+  firstDecree: getDecrees(state.season)[0],
+  secondDecree: getDecrees(state.season)[1],
+  monsterScore: getMonsterScore(state.board),
+})
+
 const useGameStateBase = create<GameState>()(
-  persist(
-    immer((set, get) => ({
-      ...getInitialState(gameCode),
-      selectTerrain: (terrain: PlaceableTerrain) =>
-        set(() => ({ selectedTerrain: terrain })),
+  compute(
+    persist(
+      immer((set, get) => ({
+        ...getInitialState(gameCode),
+        selectTerrain: (terrain: PlaceableTerrain) =>
+          set(() => ({ selectedTerrain: terrain })),
 
-      toggleNextPiece: (coords: Coords) =>
-        set(({ nextPiece, board }) => {
-          const [x, y] = fromCoords(coords)
-          const existing = board[y][x]
-          if ([Empty, Ruins].includes(existing)) {
-            if (nextPiece.has(coords)) {
-              nextPiece.delete(coords)
-            } else {
-              nextPiece.add(coords)
-            }
-          }
-        }),
-      confirmPlacement: () =>
-        set((state) => {
-          const { nextPiece, selectedTerrain, board, season } = state
-          if (isLegalPlacement(state)) {
-            if (selectedTerrain) {
-              nextPiece.forEach((coords) => {
-                const [x, y] = fromCoords(coords)
-                board[y][x] = selectedTerrain
-              })
-            }
-            if (
-              selectedTerrain !== Monster &&
-              (nextPiece.size === 2 || nextPiece.size === 3)
-            ) {
-              state.placementCoins += 1
-            }
-            nextPiece.clear()
-            const card = getCurrentCard(state)
-
-            if (isExploreCard(card)) {
-              state.seasonTime += card.time
-            }
-
-            const maxTime = getMaxTime(season)
-
-            state.selectedTerrain = null
-
-            if (state.seasonTime < maxTime) {
-              state.currentCard += 1
-              updateCardState(state)
-            }
-
-            recalculateScores(state)
-          }
-        }),
-      clearPiece: () =>
-        set(({ nextPiece }) => {
-          nextPiece.clear()
-        }),
-      endSeason: () =>
-        set((state) => {
-          const { board, season, scores, placementCoins, scoresByDecree } =
-            state
-          if (!season) return
-
-          const [firstDecree, secondDecree] = getDecrees(season)
-
-          const newScores: Scores = {
-            season,
-            first: scoresByDecree[firstDecree],
-            second: scoresByDecree[secondDecree],
-            coins: getMountainCoins(board) + placementCoins,
-            monsters: getMonsters(board),
-          }
-          scores.push(newScores)
-          recalculateScores(state)
-          advanceSeason(state)
-          updateCardState(state)
-        }),
-      startGame: (gameCode: string) => {
-        location.hash = gameCode
-
-        set(() => getInitialState(gameCode))
-      },
-      resetGame: () => {
-        localStorage.clear()
-        location.hash = ''
-        location.reload()
-      },
-      selectEdict: async (decree: 'A' | 'B' | 'C' | 'D') => {
-        const id = await showEdicts({
-          currentEdict: get().edictsByDecree[decree]?.id ?? null,
-        })
-        if (id) {
+        toggleNextPiece: (coords: Coords) =>
           set((state) => {
-            state.edictsByDecree[decree] = id
+            const { board, nextPiece } = state
+            const [x, y] = fromCoords(coords)
+            const existing = board[y][x]
+            const currentCard = getCurrentCard(state)
+            if (
+              [Empty, Ruins].includes(existing) &&
+              !isRuinsCard(currentCard)
+            ) {
+              if (nextPiece.has(coords)) {
+                nextPiece.delete(coords)
+              } else {
+                nextPiece.add(coords)
+              }
+            }
+          }),
+        confirmPlacement: () =>
+          set((state) => {
+            const { nextPiece, selectedTerrain, board, season } = state
+            if (isLegalPlacement(state)) {
+              if (selectedTerrain) {
+                nextPiece.forEach((coords) => {
+                  const [x, y] = fromCoords(coords)
+                  board[y][x] = selectedTerrain
+                })
+              }
+              if (
+                selectedTerrain !== Monster &&
+                (nextPiece.size === 2 || nextPiece.size === 3)
+              ) {
+                state.placementCoins += 1
+              }
+              nextPiece.clear()
+              const card = getCurrentCard(state)
+
+              if (isExploreCard(card)) {
+                state.seasonTime += card.time
+              }
+
+              const maxTime = getMaxTime(season)
+
+              state.selectedTerrain = null
+
+              if (state.seasonTime < maxTime) {
+                state.currentCardIndex += 1
+                showCurrentCardAndUpdateSelectedTerrain(state)
+              }
+
+              recalculateScores(state)
+            }
+          }),
+        clearPiece: () =>
+          set(({ nextPiece }) => {
+            nextPiece.clear()
+          }),
+        endSeason: () =>
+          set((state) => {
+            const { board, season, scores, placementCoins, scoresByDecree } =
+              state
+            if (!season) return
+
+            const [firstDecree, secondDecree] = getDecrees(season)
+
+            const newScores: Scores = {
+              season,
+              first: scoresByDecree[firstDecree],
+              second: scoresByDecree[secondDecree],
+              coins: getMountainCoins(board) + placementCoins,
+              monsters: getMonsterScore(board),
+            }
+            scores.push(newScores)
             recalculateScores(state)
+            advanceSeason(state)
+            showCurrentCardAndUpdateSelectedTerrain(state)
+          }),
+        startGame: (gameCode: string) => {
+          location.hash = gameCode
+
+          set(() => getInitialState(gameCode))
+          showCurrentCardAndUpdateSelectedTerrain(get())
+        },
+        resetGame: () => {
+          localStorage.clear()
+          location.hash = ''
+          location.reload()
+        },
+        selectEdict: async (decree: 'A' | 'B' | 'C' | 'D') => {
+          const id = await showEdicts({
+            currentEdict: get().edictsByDecree[decree]?.id ?? null,
           })
-        }
-      },
-    })),
-    {
-      name: 'gameState',
-      partialize: ({
-        board,
-        season,
-        scores,
-        placementCoins,
-        currentCard,
-        seasonTime,
-      }) => ({
-        board,
-        season,
-        scores,
-        placementCoins,
-        currentCard,
-        seasonTime,
-      }),
-      onRehydrateStorage: () => (state, error) => {
-        if (error || !state) {
-          console.error(error)
-          return
-        }
-        recalculateScores(state)
-      },
-    }
+          if (id) {
+            set((state) => {
+              state.edictsByDecree[decree] = id
+              recalculateScores(state)
+            })
+          }
+        },
+      })),
+      {
+        name: 'gameState',
+        partialize: ({
+          board,
+          season,
+          scores,
+          placementCoins,
+          currentCardIndex,
+          seasonTime,
+        }) => ({
+          board,
+          season,
+          scores,
+          placementCoins,
+          currentCardIndex,
+          seasonTime,
+        }),
+        onRehydrateStorage: () => (state, error) => {
+          if (error || !state) {
+            console.error(error)
+            return
+          }
+
+          recalculateScores(state)
+        },
+      }
+    ),
+    computeState
   )
 )
+
+export type ComputedState = ReturnType<typeof computeState>
 
 export const useGameState = createSelectors(useGameStateBase)
 
 function advanceSeason(state: GameState) {
   state.seasonTime = 0
-  state.currentCard = 0
+  state.currentCardIndex = 0
   switch (state.season) {
     case 'Spring':
       state.season = 'Summer'
@@ -229,7 +254,7 @@ function advanceSeason(state: GameState) {
   }
 }
 
-function updateCardState(state: GameState) {
+function showCurrentCardAndUpdateSelectedTerrain(state: GameState) {
   const nextCard = getCurrentCard(state)
   if (nextCard) {
     showCard(nextCard.id)
@@ -266,25 +291,9 @@ function getMountainCoins(board: Board): number {
     .reduce((a, b) => a + b, 0)
 }
 
-export const useCoins = () => {
-  const board = useGameState.use.board()
-  const placementCoins = useGameState.use.placementCoins()
-  return getMountainCoins(board) + placementCoins
-}
-
 export const useMonsters = () => {
   const board = useGameState.use.board()
-
-  return getMonsters(board)
-}
-
-export const useGameOver = () => {
-  const scores = useGameState.use.scores()
-  return scores.length === 4
-}
-
-export const useLegalPlacement = () => {
-  return isLegalPlacement(useGameState())
+  return getMonsterScore(board)
 }
 
 function isLegalPlacement(state: GameState): boolean {
@@ -339,11 +348,11 @@ export const useCurrentCard = () => {
 }
 
 function getCurrentCard(state: GameState) {
-  const { currentCard, cardsPerSeason, season } = state
+  const { currentCardIndex: currentCard, cardsPerSeason, season } = state
   return season ? cardsPerSeason[season][currentCard] : null
 }
 
-function getMonsters(board: Board) {
+function getMonsterScore(board: Board) {
   function isEmpty(cell: Terrain): boolean {
     return cell === Empty || cell === Ruins
   }

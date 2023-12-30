@@ -7,7 +7,9 @@ import { Random, createRandom } from './utils'
 export * from './utils'
 
 function getInitialBoard(rng: Random) {
-  const i = rng.int32() % boards.length
+  const int = rng.int32()
+  const length = boards.length
+  const i = mod(int, length)
   return boards[i]
 }
 
@@ -22,4 +24,8 @@ export function getGameSetup(gameCode: string | null): GameSetup {
     cardsPerSeason,
     edictsByDecree,
   }
+}
+
+function mod(n: number, m: number) {
+  return ((n % m) + m) % m
 }

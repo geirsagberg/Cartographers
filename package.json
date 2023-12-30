@@ -25,7 +25,8 @@
     "seedrandom": "^3.0.5",
     "tinycolor2": "^1.6.0",
     "zustand": "^4.4.7",
-    "zustand-computed": "^1.3.7"
+    "zustand-computed": "^1.3.7",
+    "zustand-middleware-computed-state": "^0.1.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

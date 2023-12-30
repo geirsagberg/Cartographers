@@ -17,6 +17,7 @@ import {
   Mountain,
   Ruins,
   Terrain,
+  Wasteland,
   Water,
 } from './types'
 
@@ -42,6 +43,7 @@ export const ColorMap = {
   [Hamlet]: '#84100062',
   [Monster]: '#59059662',
   [Edge]: 'rgba(0, 0, 0, 0.08)',
+  [Wasteland]: '#3f1700dd',
 }
 
 export const IconMap: Record<Terrain, any> = {
@@ -54,4 +56,5 @@ export const IconMap: Record<Terrain, any> = {
   [Hamlet]: FaHouse,
   [Monster]: FaSpaghettiMonsterFlying,
   [Edge]: undefined,
+  [Wasteland]: undefined,
 }

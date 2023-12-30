@@ -12,6 +12,7 @@ import {
   Water,
   isExploreCard,
   isMonsterCard,
+  isRuinsCard,
 } from '../types'
 import { getMaxTime } from './constants'
 import { Random, shuffleArray } from './utils'
@@ -168,8 +169,18 @@ function getCardsForSeason(
   let time = 0
   const maxTime = getMaxTime(season)
   while (time < maxTime) {
-    const card = cards.pop()!
+    let card = cards.pop()!
+    const monsterCards: Card[] = []
+    // If the last card was a ruins card, we can't have a monster card next
+    while (
+      isMonsterCard(card) &&
+      isRuinsCard(cardsForSeason[cardsForSeason.length - 1])
+    ) {
+      monsterCards.push(card)
+      card = cards.pop()!
+    }
     cardsForSeason.push(card)
+    cards.push(...monsterCards)
     if (isExploreCard(card)) time += card.time
   }
   return [cardsForSeason, cards]

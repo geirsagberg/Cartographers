@@ -7,7 +7,7 @@ export const Hamlet = 'H'
 export const Monster = 'A'
 export const Ruins = 'R'
 export const Edge = 'X'
-export const Wasteland = 'W'
+export const Wasteland = 'S'
 
 export type Scores = {
   season: Season
