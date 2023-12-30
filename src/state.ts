@@ -3,22 +3,17 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { createSelectors } from './createSelectors'
+import { edictsById, getRandomEdicts } from './rules/edicts'
 import {
-  Card,
   DefaultBoard,
-  edictsById,
-  fromCoords,
   getCardsPerSeason,
   getDecrees,
   getMaxTime,
-  getRandomEdicts,
-  isExploreCard,
-  isMonsterCard,
-  isRuinsCard,
-  isShapeCard,
-} from './rules'
+} from './rules/rules'
+import { fromCoords } from './rules/utils'
 import {
   Board,
+  Card,
   Coords,
   Decree,
   Empty,
@@ -29,6 +24,10 @@ import {
   Scores,
   Season,
   Terrain,
+  isExploreCard,
+  isMonsterCard,
+  isRuinsCard,
+  isShapeCard,
 } from './types'
 import { showCard, showEdicts } from './utils'
 
@@ -167,24 +166,8 @@ const useGameStateBase = create<GameState>()(
             monsters: getMonsters(board),
           }
           scores.push(newScores)
-          state.firstDecreeScore = 0
-          state.secondDecreeScore = 0
-          state.currentCard = 0
-          state.seasonTime = 0
-          switch (season) {
-            case 'Spring':
-              state.season = 'Summer'
-              break
-            case 'Summer':
-              state.season = 'Fall'
-              break
-            case 'Fall':
-              state.season = 'Winter'
-              break
-            case 'Winter':
-              state.season = null
-              break
-          }
+          recalculateScores(state)
+          advanceSeason(state)
           updateCardState(state)
         }),
       startGame: (code: string) => {
@@ -254,6 +237,25 @@ const useGameStateBase = create<GameState>()(
 )
 
 export const useGameState = createSelectors(useGameStateBase)
+
+function advanceSeason(state: GameState) {
+  state.seasonTime = 0
+  state.currentCard = 0
+  switch (state.season) {
+    case 'Spring':
+      state.season = 'Summer'
+      break
+    case 'Summer':
+      state.season = 'Fall'
+      break
+    case 'Fall':
+      state.season = 'Winter'
+      break
+    case 'Winter':
+      state.season = null
+      break
+  }
+}
 
 function updateCardState(state: GameState) {
   const nextCard = getCurrentCard(state)

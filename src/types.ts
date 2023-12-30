@@ -55,3 +55,41 @@ export type Board = Terrain[][]
 export type Coords = `${number},${number}`
 
 export type Season = 'Spring' | 'Summer' | 'Fall' | 'Winter'
+
+export type Card = {
+  id: string
+  name: string
+}
+
+export type ShapeCard = Card & {
+  shapes: Set<Coords>[]
+  terrains: PlaceableTerrain[]
+}
+
+export type MonsterCard = ShapeCard & {
+  isMonster: true
+}
+
+export type RuinsCard = Card & {
+  isRuins: true
+}
+
+export type ExploreCard = ShapeCard & {
+  time: number
+}
+
+export function isExploreCard(card: Card | null): card is ExploreCard {
+  return card != null && 'time' in card
+}
+
+export function isMonsterCard(card: Card | null): card is MonsterCard {
+  return card != null && 'isMonster' in card
+}
+
+export function isRuinsCard(card: Card | null): card is RuinsCard {
+  return card != null && 'isRuins' in card
+}
+
+export function isShapeCard(card: Card | null): card is ShapeCard {
+  return card != null && 'shapes' in card
+}

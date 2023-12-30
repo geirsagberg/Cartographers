@@ -13,7 +13,8 @@ import ScoresView from './ScoresView'
 import './app.css'
 import Button from './components/Button'
 import Expander from './components/Expander'
-import { getDecrees, getMaxTime, isShapeCard, toCoords } from './rules'
+import { getDecrees, getMaxTime } from './rules/rules'
+import { toCoords } from './rules/utils'
 import {
   useCoins,
   useCurrentCard,
@@ -36,6 +37,7 @@ import {
   Monster,
   PlaceableTerrain,
   Water,
+  isShapeCard,
 } from './types'
 import { getCardUrl, getEdictUrl, showCard, showEdict, showMenu } from './utils'
 

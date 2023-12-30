@@ -1,5 +1,5 @@
 import { FaX } from 'react-icons/fa6'
-import { edicts } from '../rules'
+import { edicts } from '../rules/edicts'
 
 import { InstanceProps } from 'react-modal-promise'
 import { TextColor } from '../themes'
