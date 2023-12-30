@@ -15,14 +15,15 @@ import {
   Water,
 } from '../types'
 import {
-  DefaultBoard,
+  Random,
+  fromCoords,
   getAdjacentTerrain,
   getTerrain,
   isFilledOrEdge,
   isFilledOrEdgeCell,
   shuffleArray,
-} from './rules'
-import { createRandom, fromCoords, toCoords } from './utils'
+  toCoords,
+} from './utils'
 
 function findClusters(board: Board, terrain: PlaceableTerrain): Set<Coords>[] {
   const clusters: Set<Coords>[] = []
@@ -214,14 +215,14 @@ export const edicts: Edict[] = [
     id: 32,
     type: 'yellowblue',
     name: 'The Golden Granary',
-    calculateScore: (board: Board) => {
+    calculateScore: (board: Board, initialBoard: Board) => {
       const waterAdjacentToRuins = board
         .map(
           (row, y) =>
             row.filter(
               (cell, x) =>
                 cell === Water &&
-                getAdjacentTerrain(DefaultBoard, x, y).some(
+                getAdjacentTerrain(initialBoard, x, y).some(
                   (terrain) => terrain === Ruins
                 )
             ).length
@@ -231,7 +232,7 @@ export const edicts: Edict[] = [
         .map(
           (row, y) =>
             row.filter(
-              (cell, x) => cell === Field && DefaultBoard[y][x] === Ruins
+              (cell, x) => cell === Field && initialBoard[y][x] === Ruins
             ).length
         )
         .reduce((a, b) => a + b, 0)
@@ -459,25 +460,24 @@ export const edictsById = edicts.reduce((acc, edict) => {
   return acc
 }, {} as Record<number, Edict>)
 
-export function getRandomEdicts(seed: string): Record<Decree, number> {
-  const rng = createRandom(seed)
+export function getEdictsByDecree(rng: Random): Record<Decree, Edict> {
   const types = shuffleArray(['green', 'yellowblue', 'red', 'grey'], rng)
   const A = shuffleArray(
     edicts.filter((e) => e.type === types[0]),
     rng
-  )[0].id
+  )[0]
   const B = shuffleArray(
     edicts.filter((e) => e.type === types[1]),
     rng
-  )[0].id
+  )[0]
   const C = shuffleArray(
     edicts.filter((e) => e.type === types[2]),
     rng
-  )[0].id
+  )[0]
   const D = shuffleArray(
     edicts.filter((e) => e.type === types[3]),
     rng
-  )[0].id
+  )[0]
 
   return { A, B, C, D }
 }

@@ -1,6 +1,5 @@
 import tinyColor from 'tinycolor2'
-import { DefaultBoard } from './rules/rules'
-import { toCoords } from './rules/utils'
+import { toCoords } from './rules'
 import { useGameState } from './state'
 import {
   CellSize,
@@ -21,6 +20,7 @@ export interface CellProps {
 export default function Cell({ x, y, terrain }: CellProps) {
   const toggleNextPiece = useGameState.use.toggleNextPiece()
   const nextPiece = useGameState.use.nextPiece()
+  const initialBoard = useGameState.use.initialBoard()
   const coords = toCoords(x, y)
   const isPlacing = nextPiece.has(coords)
   const color = tinyColor(ColorMap[terrain])
@@ -40,7 +40,7 @@ export default function Cell({ x, y, terrain }: CellProps) {
         // boxShadow: isPlacing ? '0 0 0 1px ' + TextColor : undefined,
       }}
     >
-      {DefaultBoard[y][x] === Ruins && terrain !== Ruins && (
+      {initialBoard[y][x] === Ruins && terrain !== Ruins && (
         <div
           css={{
             position: 'absolute',

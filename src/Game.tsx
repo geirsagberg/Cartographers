@@ -13,7 +13,7 @@ import ScoresView from './ScoresView'
 import './app.css'
 import Button from './components/Button'
 import Expander from './components/Expander'
-import { getDecrees, getMaxTime } from './rules/rules'
+import { getDecrees, getMaxTime } from './rules/constants'
 import { toCoords } from './rules/utils'
 import {
   useCoins,
@@ -56,13 +56,12 @@ export default function Game() {
   const confirmPlacement = useGameState.use.confirmPlacement()
   const clearPiece = useGameState.use.clearPiece()
   const season = useGameState.use.season()
-  const firstDecreeScore = useGameState.use.firstDecreeScore()
-  const secondDecreeScore = useGameState.use.secondDecreeScore()
   const endSeason = useGameState.use.endSeason()
   const scores = useGameState.use.scores()
-  const edicts = useGameState.use.edicts()
+  const edicts = useGameState.use.edictsByDecree()
   const resetGame = useGameState.use.resetGame()
   const seasonTime = useGameState.use.seasonTime()
+  const scoresByDecree = useGameState.use.scoresByDecree()
   const maxTime = getMaxTime(season)
   const gameOver = useGameOver()
   const legalPlacement = useLegalPlacement()
@@ -159,21 +158,21 @@ export default function Game() {
             New Game
           </Button>
         ) : (
-          Object.entries(edicts).map(([decree, edictId]) => (
+          Object.entries(edicts).map(([decree, edict]) => (
             <div
               key={decree}
               css={{
                 position: 'relative',
                 display: 'flex',
-                boxShadow: [firstEdict, secondEdict].includes(edictId)
+                boxShadow: [firstEdict, secondEdict].includes(edict)
                   ? '0 0 0.5rem black'
                   : undefined,
-                opacity: [firstEdict, secondEdict].includes(edictId) ? 1 : 0.5,
+                opacity: [firstEdict, secondEdict].includes(edict) ? 1 : 0.5,
               }}
-              onClick={() => showEdict(edictId)}
+              onClick={() => showEdict(edict.id)}
             >
               <img
-                src={getEdictUrl(edictId)}
+                src={getEdictUrl(edict.id)}
                 css={{
                   width: '3rem',
                 }}
@@ -292,7 +291,7 @@ export default function Game() {
           >
             {firstDecree}
           </span>
-          <span>{firstDecreeScore}</span>
+          <span>{scoresByDecree[firstDecree]}</span>
           <span
             css={{
               fontSize: '1.2rem',
@@ -300,7 +299,7 @@ export default function Game() {
           >
             {secondDecree}
           </span>
-          <span>{secondDecreeScore}</span>
+          <span>{scoresByDecree[secondDecree]}</span>
           <FaCoins />
           <span>{coins}</span>
           <FaSpaghettiMonsterFlying />

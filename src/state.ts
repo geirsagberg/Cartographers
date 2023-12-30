@@ -3,19 +3,15 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { createSelectors } from './createSelectors'
-import { edictsById, getRandomEdicts } from './rules/edicts'
-import {
-  DefaultBoard,
-  getCardsPerSeason,
-  getDecrees,
-  getMaxTime,
-} from './rules/rules'
+import { getGameSetup } from './rules'
+import { getDecrees, getMaxTime } from './rules/constants'
 import { fromCoords } from './rules/utils'
 import {
   Board,
   Card,
   Coords,
   Decree,
+  Edict,
   Empty,
   Monster,
   Mountain,
@@ -36,6 +32,7 @@ enableMapSet()
 interface GameState {
   gameCode: string | null
   season: Season | null
+  initialBoard: Board
   board: Board
   selectedTerrain: PlaceableTerrain | null
   nextPiece: Set<Coords>
@@ -43,9 +40,8 @@ interface GameState {
   seasonTime: number
   scores: Scores[]
   placementCoins: number
-  firstDecreeScore: number
-  secondDecreeScore: number
-  edicts: Record<Decree, number>
+  scoresByDecree: Record<Decree, number>
+  edictsByDecree: Record<Decree, Edict>
   cardsPerSeason: Record<Season, Card[]>
   selectTerrain: (terrain: PlaceableTerrain) => void
   toggleNextPiece: (coords: Coords) => void
@@ -59,40 +55,35 @@ interface GameState {
 
 const gameCode = location.hash.slice(1) || null
 
-const initialState = {
-  board: DefaultBoard,
-  season: 'Spring',
-  scores: [],
-  currentCard: 0,
-  seasonTime: 0,
-  edicts: gameCode
-    ? getRandomEdicts(gameCode)
-    : {
-        A: 0,
-        B: 0,
-        C: 0,
-        D: 0,
-      },
-  cardsPerSeason: gameCode
-    ? getCardsPerSeason(gameCode)
-    : {
-        Spring: [],
-        Summer: [],
-        Fall: [],
-        Winter: [],
-      },
-  gameCode,
-  selectedTerrain: null,
-  firstDecreeScore: 0,
-  secondDecreeScore: 0,
-  nextPiece: new Set(),
-  placementCoins: 0,
-} satisfies Partial<GameState>
+const getInitialState = (gameCode: string | null) => {
+  const { initialBoard, edictsByDecree, cardsPerSeason } =
+    getGameSetup(gameCode)
+  return {
+    initialBoard,
+    board: initialBoard,
+    season: 'Spring',
+    scores: [],
+    currentCard: 0,
+    seasonTime: 0,
+    edictsByDecree,
+    cardsPerSeason,
+    gameCode,
+    selectedTerrain: null,
+    scoresByDecree: {
+      A: 0,
+      B: 0,
+      C: 0,
+      D: 0,
+    },
+    nextPiece: new Set(),
+    placementCoins: 0,
+  } satisfies Partial<GameState>
+}
 
 const useGameStateBase = create<GameState>()(
   persist(
     immer((set, get) => ({
-      ...initialState,
+      ...getInitialState(gameCode),
       selectTerrain: (terrain: PlaceableTerrain) =>
         set(() => ({ selectedTerrain: terrain })),
 
@@ -149,19 +140,16 @@ const useGameStateBase = create<GameState>()(
         }),
       endSeason: () =>
         set((state) => {
-          const {
-            board,
-            season,
-            scores,
-            placementCoins,
-            firstDecreeScore,
-            secondDecreeScore,
-          } = state
+          const { board, season, scores, placementCoins, scoresByDecree } =
+            state
           if (!season) return
+
+          const [firstDecree, secondDecree] = getDecrees(season)
+
           const newScores: Scores = {
             season,
-            first: firstDecreeScore ?? 0,
-            second: secondDecreeScore ?? 0,
+            first: scoresByDecree[firstDecree],
+            second: scoresByDecree[secondDecree],
             coins: getMountainCoins(board) + placementCoins,
             monsters: getMonsters(board),
           }
@@ -170,26 +158,10 @@ const useGameStateBase = create<GameState>()(
           advanceSeason(state)
           updateCardState(state)
         }),
-      startGame: (code: string) => {
-        location.hash = code
+      startGame: (gameCode: string) => {
+        location.hash = gameCode
 
-        const edicts = getRandomEdicts(code)
-        const cardsPerSeason = getCardsPerSeason(code)
-
-        set(() => ({
-          gameCode: code,
-          season: 'Spring',
-          scores: [],
-          currentCard: 0,
-          edicts,
-          cardsPerSeason,
-          selectedTerrain: null,
-          firstDecreeScore: 0,
-          secondDecreeScore: 0,
-          nextPiece: new Set(),
-          placementCoins: 0,
-          board: DefaultBoard,
-        }))
+        set(() => getInitialState(gameCode))
       },
       resetGame: () => {
         localStorage.clear()
@@ -198,11 +170,11 @@ const useGameStateBase = create<GameState>()(
       },
       selectEdict: async (decree: 'A' | 'B' | 'C' | 'D') => {
         const id = await showEdicts({
-          currentEdict: get().edicts[decree] ?? null,
+          currentEdict: get().edictsByDecree[decree]?.id ?? null,
         })
         if (id) {
           set((state) => {
-            state.edicts[decree] = id
+            state.edictsByDecree[decree] = id
             recalculateScores(state)
           })
         }
@@ -402,18 +374,9 @@ function getMonsters(board: Board) {
 }
 
 function recalculateScores(state: GameState) {
-  const { season, edicts, board } = state
-  if (season !== null) {
-    const [firstDecree, secondDecree] = getDecrees(season)
-    const firstEdictId = edicts[firstDecree]
-    const secondEdictId = edicts[secondDecree]
-    if (firstEdictId !== null) {
-      state.firstDecreeScore =
-        edictsById[firstEdictId]?.calculateScore(board) ?? 0
-    }
-    if (secondEdictId !== null) {
-      state.secondDecreeScore =
-        edictsById[secondEdictId]?.calculateScore(board) ?? 0
-    }
-  }
+  const { edictsByDecree, board, scoresByDecree, initialBoard } = state
+
+  Object.entries(edictsByDecree).forEach(([decree, edict]) => {
+    scoresByDecree[decree as Decree] = edict.calculateScore(board, initialBoard)
+  })
 }

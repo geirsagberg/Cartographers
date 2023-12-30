@@ -7,6 +7,7 @@ export const Hamlet = 'H'
 export const Monster = 'A'
 export const Ruins = 'R'
 export const Edge = 'X'
+export const Wasteland = 'W'
 
 export type Scores = {
   season: Season
@@ -20,7 +21,7 @@ export type Edict = {
   id: number
   type: EdictType
   name: string
-  calculateScore: (board: Board) => number
+  calculateScore: (board: Board, initialBoard: Board) => number
 }
 
 export type Decree = 'A' | 'B' | 'C' | 'D'
@@ -36,6 +37,7 @@ export type Hamlet = typeof Hamlet
 export type Monster = typeof Monster
 export type Ruins = typeof Ruins
 export type Edge = typeof Edge
+export type Wasteland = typeof Wasteland
 
 export type Terrain =
   | Empty
@@ -47,6 +49,7 @@ export type Terrain =
   | Monster
   | Ruins
   | Edge
+  | Wasteland
 
 export type PlaceableTerrain = Forest | Field | Hamlet | Monster | Water
 
@@ -92,4 +95,10 @@ export function isRuinsCard(card: Card | null): card is RuinsCard {
 
 export function isShapeCard(card: Card | null): card is ShapeCard {
   return card != null && 'shapes' in card
+}
+
+export type GameSetup = {
+  initialBoard: Board
+  cardsPerSeason: Record<Season, Card[]>
+  edictsByDecree: Record<Decree, Edict>
 }

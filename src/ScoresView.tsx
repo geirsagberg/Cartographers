@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FaCoins, FaSpaghettiMonsterFlying } from 'react-icons/fa6'
-import { getDecrees } from './rules/rules'
 import { Scores } from './types'
+import { getDecrees } from './rules/constants'
 
 export default function ScoresView({ scores }: { scores: Scores }) {
   const [expanded, setExpanded] = useState(false)

@@ -1,4 +1,6 @@
+import random from 'seedrandom'
 import {
+  Card,
   ExploreCard,
   Field,
   Forest,
@@ -6,8 +8,13 @@ import {
   Monster,
   MonsterCard,
   RuinsCard,
+  Season,
   Water,
+  isExploreCard,
+  isMonsterCard,
 } from '../types'
+import { getMaxTime } from './constants'
+import { Random, shuffleArray } from './utils'
 
 export const monsterCards: MonsterCard[] = [
   {
@@ -141,3 +148,60 @@ export const exploreCards: ExploreCard[] = [
     shapes: [new Set(['0,0'])],
   },
 ]
+
+function getCardsForSeason(
+  previousCards: Card[],
+  monsters: Card[],
+  season: Season,
+  rng: random.PRNG
+): [Card[], Card[]] {
+  const cards = shuffleArray(
+    [
+      ...ruinsCards,
+      ...exploreCards,
+      ...previousCards.filter(isMonsterCard),
+      monsters.pop()!,
+    ],
+    rng
+  )
+  const cardsForSeason: Card[] = []
+  let time = 0
+  const maxTime = getMaxTime(season)
+  while (time < maxTime) {
+    const card = cards.pop()!
+    cardsForSeason.push(card)
+    if (isExploreCard(card)) time += card.time
+  }
+  return [cardsForSeason, cards]
+}
+
+export function getCardsPerSeason(rng: Random): Record<Season, Card[]> {
+  const monsters = shuffleArray(monsterCards, rng)
+
+  const [springCards, springRest] = getCardsForSeason(
+    [],
+    monsters,
+    'Spring',
+    rng
+  )
+  const [summerCards, summerRest] = getCardsForSeason(
+    springRest,
+    monsters,
+    'Summer',
+    rng
+  )
+  const [fallCards, fallRest] = getCardsForSeason(
+    summerRest,
+    monsters,
+    'Fall',
+    rng
+  )
+  const [winterCards] = getCardsForSeason(fallRest, monsters, 'Winter', rng)
+
+  return {
+    Spring: springCards,
+    Summer: summerCards,
+    Fall: fallCards,
+    Winter: winterCards,
+  }
+}
