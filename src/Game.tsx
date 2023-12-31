@@ -30,6 +30,7 @@ import {
   Monster,
   PlaceableTerrain,
   Water,
+  isRuinsCard,
   isShapeCard,
 } from './types'
 import { getCardUrl, getEdictUrl, showCard, showEdict, showMenu } from './utils'
@@ -61,6 +62,7 @@ export default function Game() {
   const coins = useGameState.use.totalCoins()
   const monsters = useGameState.use.monsterScore()
   const currentCard = useGameState.use.currentCard()
+  const previousCard = useGameState.use.previousCard()
   const [firstDecree, secondDecree] = getDecrees(season)
 
   const firstEdict = edicts[firstDecree]
@@ -127,17 +129,38 @@ export default function Game() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            position: 'relative',
+            height: 62,
           }}
         >
           {currentCard && seasonTime < maxTime && (
-            <img
-              css={{
-                width: '3rem',
-              }}
-              src={getCardUrl(currentCard.id)}
-              alt={currentCard.name}
-              onClick={() => showCard(currentCard.id)}
-            />
+            <>
+              {isRuinsCard(previousCard) && (
+                <img
+                  src={getCardUrl(previousCard.id)}
+                  alt={previousCard.name}
+                  css={{
+                    top: 0,
+                    left: '0.5rem',
+                    height: '85%',
+                    position: 'absolute',
+                  }}
+                  draggable={false}
+                />
+              )}
+              <img
+                css={{
+                  height: isRuinsCard(previousCard) ? '85%' : '100%',
+                  bottom: 0,
+                  right: isRuinsCard(previousCard) ? '0.5rem' : 'initial',
+                  position: 'absolute',
+                }}
+                src={getCardUrl(currentCard.id)}
+                alt={currentCard.name}
+                onClick={() => showCard(currentCard.id)}
+                draggable={false}
+              />
+            </>
           )}
         </div>
         {gameOver ? (

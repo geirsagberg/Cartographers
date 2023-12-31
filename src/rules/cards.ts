@@ -169,18 +169,22 @@ function getCardsForSeason(
   let time = 0
   const maxTime = getMaxTime(season)
   while (time < maxTime) {
-    let card = cards.pop()!
-    const monsterCards: Card[] = []
-    // If the last card was a ruins card, we can't have a monster card next
-    while (
+    const card = cards.pop()!
+    // If the last card was a ruins card, we can't have a monster card next.
+    // We have to place the monster card before the ruins card.
+    if (
       isMonsterCard(card) &&
       isRuinsCard(cardsForSeason[cardsForSeason.length - 1])
     ) {
-      monsterCards.push(card)
-      card = cards.pop()!
+      // Put the monster card second to last in cardsForSeason, or third to last if there are two ruins cards preceding.
+      if (isRuinsCard(cardsForSeason[cardsForSeason.length - 2])) {
+        cardsForSeason.splice(-2, 0, card)
+      } else {
+        cardsForSeason.splice(-1, 0, card)
+      }
+    } else {
+      cardsForSeason.push(card)
     }
-    cardsForSeason.push(card)
-    cards.push(...monsterCards)
     if (isExploreCard(card)) time += card.time
   }
   return [cardsForSeason, cards]

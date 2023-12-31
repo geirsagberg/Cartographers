@@ -1,36 +1,22 @@
 import { InstanceProps } from 'react-modal-promise'
+import Modal from './Modal'
 
 interface UrlImgProps extends InstanceProps<void> {
   url: string
+  secondUrl?: string
 }
 
 export default function UrlImg({ isOpen, onResolve, url }: UrlImgProps) {
-  if (!isOpen) {
-    return null
-  }
-
   return (
-    <div
-      css={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 9999,
-      }}
-      onClick={() => onResolve()}
-    >
+    <Modal isOpen={isOpen} onClickOutside={() => onResolve()}>
       <img
+        onClick={() => onResolve()}
         style={{
           width: 356,
         }}
         src={url}
+        draggable={false}
       />
-    </div>
+    </Modal>
   )
 }

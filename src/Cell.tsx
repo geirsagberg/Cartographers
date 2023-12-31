@@ -9,7 +9,7 @@ import {
   RuinsColor,
   TextColor,
 } from './themes'
-import { Mountain, Ruins, Terrain } from './types'
+import { Mountain, Ruins, Terrain, isRuinsCard } from './types'
 
 export interface CellProps {
   terrain: Terrain
@@ -21,6 +21,8 @@ export default function Cell({ x, y, terrain }: CellProps) {
   const toggleNextPiece = useGameState.use.toggleNextPiece()
   const nextPiece = useGameState.use.nextPiece()
   const initialBoard = useGameState.use.initialBoard()
+  const previousCard = useGameState.use.previousCard()
+  const highlightRuins = isRuinsCard(previousCard)
   const coords = toCoords(x, y)
   const isPlacing = nextPiece.has(coords)
   const color = tinyColor(ColorMap[terrain])
@@ -65,6 +67,16 @@ export default function Cell({ x, y, terrain }: CellProps) {
         })
       ) : (
         <span css={{ width: IconSize, height: IconSize }}>&nbsp;</span>
+      )}
+      {terrain === Ruins && highlightRuins && (
+        <div
+          css={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            border: '2px solid ' + TextColor,
+          }}
+        />
       )}
       {isPlacing && (
         <div

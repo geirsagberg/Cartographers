@@ -2,7 +2,9 @@ import {
   FaBuildingColumns,
   FaHouse,
   FaMountain,
+  FaSnowflake,
   FaSpaghettiMonsterFlying,
+  FaSun,
   FaTree,
   FaWater,
   FaWheatAwn,
@@ -16,6 +18,7 @@ import {
   Monster,
   Mountain,
   Ruins,
+  Season,
   Terrain,
   Wasteland,
   Water,
@@ -57,4 +60,11 @@ export const IconMap: Record<Terrain, any> = {
   [Monster]: FaSpaghettiMonsterFlying,
   [Edge]: undefined,
   [Wasteland]: undefined,
+}
+
+export const IconBySeason: Record<Season, any> = {
+  Spring: FaTree,
+  Summer: FaSun,
+  Fall: FaWheatAwn,
+  Winter: FaSnowflake,
 }

@@ -2,33 +2,18 @@ import { FaX } from 'react-icons/fa6'
 import { InstanceProps } from 'react-modal-promise'
 import { useGameState } from '../state'
 import Button from './Button'
+import Modal from './Modal'
 
 export interface MenuProps extends InstanceProps<void> {}
 
 export default function Menu({ isOpen, onResolve }: MenuProps) {
   const resetGame = useGameState.use.resetGame()
 
-  if (!isOpen) {
-    return null
-  }
   return (
-    <div
-      css={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 9999,
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          onResolve()
-        }
+    <Modal
+      isOpen={isOpen}
+      onClickOutside={() => {
+        onResolve()
       }}
     >
       <div
@@ -55,6 +40,6 @@ export default function Menu({ isOpen, onResolve }: MenuProps) {
         </h2>
         <Button onClick={resetGame}>Reset</Button>
       </div>
-    </div>
+    </Modal>
   )
 }
