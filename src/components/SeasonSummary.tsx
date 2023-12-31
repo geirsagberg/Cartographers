@@ -74,7 +74,10 @@ export default function SeasonSummary({
           <span>{firstScore}</span>
           <span>{secondScore}</span>
           <span>{totalCoins}</span>
-          <span>{monsterScore}</span>
+          <span>
+            {monsterScore > 0 ? '-' : ''}
+            {monsterScore}
+          </span>
         </div>
         <div
           css={{

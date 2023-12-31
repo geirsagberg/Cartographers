@@ -1,5 +1,14 @@
 import random from 'seedrandom'
-import { Board, Coords, Edge, Empty, Ruins, Terrain } from '../types'
+import {
+  Board,
+  Coords,
+  Decree,
+  Edge,
+  Empty,
+  Ruins,
+  Season,
+  Terrain,
+} from '../types'
 
 export function toCoords(x: number, y: number): Coords {
   return `${x},${y}`
@@ -26,6 +35,30 @@ export function isFilledOrEdge(board: Board, x: number, y: number) {
 
 export function getTerrain(board: Board, x: number, y: number): Terrain {
   return board[y]?.[x] ?? Edge
+}
+
+export function isDecreeOver(decree: Decree, season: Season | null) {
+  switch (season) {
+    case 'Fall':
+      return decree === 'B'
+    case 'Winter':
+      return ['B', 'C'].includes(decree)
+    default:
+      return false
+  }
+}
+
+export function isSeasonOver(currentSeason: Season, season: Season) {
+  switch (currentSeason) {
+    case 'Summer':
+      return season === 'Spring'
+    case 'Fall':
+      return ['Spring', 'Summer'].includes(season)
+    case 'Winter':
+      return ['Spring', 'Summer', 'Fall'].includes(season)
+    default:
+      return false
+  }
 }
 
 export function getAdjacentTerrain(
