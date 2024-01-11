@@ -33,6 +33,10 @@ export function isFilledOrEdge(board: Board, x: number, y: number) {
   return ![Empty, Ruins].includes(getTerrain(board, x, y))
 }
 
+export function isEmptyOrEdge(board: Board, x: number, y: number) {
+  return [Empty, Ruins, Edge].includes(getTerrain(board, x, y))
+}
+
 export function getTerrain(board: Board, x: number, y: number): Terrain {
   return board[y]?.[x] ?? Edge
 }

@@ -20,6 +20,7 @@ import {
   fromCoords,
   getAdjacentTerrain,
   getTerrain,
+  isEmptyOrEdge,
   isFilledOrEdge,
   isFilledOrEdgeCell,
   shuffleArray,
@@ -380,22 +381,16 @@ export const edicts: Edict[] = [
               x + nextSize <= board.length &&
               y + nextSize <= board.length
             ) {
-              for (let i = 0; i < nextSize; i++) {
-                if (
-                  [Edge, Empty, Ruins].includes(
-                    getTerrain(board, x + nextSize, y + i)
-                  )
-                ) {
+              for (let i = 1; i <= nextSize; i++) {
+                if (isEmptyOrEdge(board, x + nextSize, y + i)) {
                   isSquare = false
+                  break
                 }
               }
-              for (let i = 0; i < nextSize; i++) {
-                if (
-                  [Edge, Empty, Ruins].includes(
-                    getTerrain(board, x + i, y + nextSize)
-                  )
-                ) {
+              for (let i = 1; i <= nextSize; i++) {
+                if (isEmptyOrEdge(board, x + i, y + nextSize)) {
                   isSquare = false
+                  break
                 }
               }
               if (isSquare) {
