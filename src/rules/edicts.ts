@@ -12,6 +12,7 @@ import {
   PlaceableTerrain,
   Ruins,
   Terrain,
+  Wasteland,
   Water,
 } from '../types'
 import {
@@ -315,7 +316,7 @@ export const edicts: Edict[] = [
             const [x, y] = fromCoords(coords)
             const adjacentTerrains = getAdjacentTerrain(board, x, y)
             for (const terrain of adjacentTerrains) {
-              if (![Edge, Empty, Ruins, Hamlet].includes(terrain))
+              if (![Edge, Empty, Ruins, Hamlet, Wasteland].includes(terrain))
                 terrains.add(terrain)
             }
           }
