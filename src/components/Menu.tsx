@@ -1,22 +1,22 @@
 import { FaX } from 'react-icons/fa6'
-import { InstanceProps } from 'react-modal-promise'
+import { useNavigate } from 'react-router'
 import { useGameState } from '../state'
 import Button from './Button'
 import Modal from './Modal'
 
-export interface MenuProps extends InstanceProps<void> {}
-
-export default function Menu({ isOpen, onResolve }: MenuProps) {
+export default function Menu() {
   const resetGame = useGameState.use.resetGame()
 
+  const navigate = useNavigate()
+
+  const goBack = () => {
+    navigate(-1)
+  }
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClickOutside={() => {
-        onResolve()
-      }}
-    >
+    <Modal isOpen={true} onClickOutside={goBack}>
       <div
+        id="lol"
         css={{
           background: 'url(background.jpg)',
           padding: '20px',
@@ -34,7 +34,7 @@ export default function Menu({ isOpen, onResolve }: MenuProps) {
           }}
         >
           <span>Menu</span>
-          <div onClick={() => onResolve()}>
+          <div onClick={goBack}>
             <FaX />
           </div>
         </h2>

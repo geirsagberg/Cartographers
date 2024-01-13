@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer'
 
 import compute from 'zustand-computed'
 import { createSelectors } from './createSelectors'
+import { navigate } from './router'
 import { getGameSetup } from './rules'
 import { getDecrees, getMaxTime } from './rules/constants'
 import { fromCoords, getTerrain } from './rules/utils'
@@ -27,7 +28,7 @@ import {
   isRuinsCard,
   isShapeCard,
 } from './types'
-import { showCard, showEdicts, showSeasonSummary } from './utils'
+import { showSeasonSummary } from './utils'
 
 enableMapSet()
 
@@ -52,7 +53,6 @@ interface GameState {
   endSeason: () => void
   startGame: (code: string) => void
   resetGame: () => void
-  selectEdict: (decree: 'A' | 'B' | 'C' | 'D') => Promise<void>
 }
 
 const gameCode = location.hash.slice(1) || null
@@ -97,7 +97,7 @@ const computeState = (state: GameState) => ({
 const useGameStateBase = create<GameState>()(
   compute(
     persist(
-      immer((set, get) => ({
+      immer((set) => ({
         ...getInitialState(gameCode),
         selectTerrain: (terrain: PlaceableTerrain) =>
           set(() => ({ selectedTerrain: terrain })),
@@ -176,8 +176,7 @@ const useGameStateBase = create<GameState>()(
           showCurrentCardAndUpdateSelectedTerrain()
         },
         startGame: (gameCode: string) => {
-          location.hash = gameCode
-
+          navigate(gameCode)
           set(() => getInitialState(gameCode))
           showCurrentCardAndUpdateSelectedTerrain()
         },
@@ -185,17 +184,6 @@ const useGameStateBase = create<GameState>()(
           localStorage.clear()
           location.hash = ''
           location.reload()
-        },
-        selectEdict: async (decree: 'A' | 'B' | 'C' | 'D') => {
-          const id = await showEdicts({
-            currentEdict: get().edictsByDecree[decree]?.id ?? null,
-          })
-          if (id) {
-            set((state) => {
-              state.edictsByDecree[decree] = id
-              recalculateScores(state)
-            })
-          }
         },
       })),
       {

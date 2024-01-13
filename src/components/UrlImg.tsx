@@ -1,16 +1,18 @@
-import { InstanceProps } from 'react-modal-promise'
+import { useNavigate } from 'react-router'
 import Modal from './Modal'
 
-interface UrlImgProps extends InstanceProps<void> {
+interface UrlImgProps {
   url: string
   secondUrl?: string
 }
 
-export default function UrlImg({ isOpen, onResolve, url }: UrlImgProps) {
+export default function UrlImg({ url }: UrlImgProps) {
+  const navigate = useNavigate()
+  const close = () => navigate('../', { replace: true })
   return (
-    <Modal isOpen={isOpen} onClickOutside={() => onResolve()}>
+    <Modal isOpen={true} onClickOutside={close}>
       <img
-        onClick={() => onResolve()}
+        onClick={close}
         style={{
           width: 356,
         }}

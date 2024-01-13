@@ -1,16 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import ModalContainer from 'react-modal-promise'
-import App from './App.tsx'
+import { RouterProvider } from 'react-router-dom'
 import './normalize.css'
-
-window.addEventListener('popstate', (e) => {
-  e.preventDefault()
-})
+import { router } from './router.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
     <ModalContainer />
   </React.StrictMode>
 )

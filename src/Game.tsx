@@ -7,10 +7,10 @@ import {
   FaSpaghettiMonsterFlying,
 } from 'react-icons/fa6'
 
+import { Outlet, useNavigate } from 'react-router'
 import tinycolor from 'tinycolor2'
 import Cell from './Cell'
 import ScoresView from './ScoresView'
-import './app.css'
 import Button from './components/Button'
 import Expander from './components/Expander'
 import { getDecrees } from './rules/constants'
@@ -33,7 +33,7 @@ import {
   isRuinsCard,
   isShapeCard,
 } from './types'
-import { getCardUrl, getEdictUrl, showCard, showEdict, showMenu } from './utils'
+import { getCardUrl, getEdictUrl } from './utils'
 
 const SmallButtonStyle: CSSProperties = {
   width: SmallButtonSize,
@@ -43,6 +43,7 @@ const SmallButtonStyle: CSSProperties = {
 const Selections: PlaceableTerrain[] = [Water, Forest, Field, Hamlet, Monster]
 
 export default function Game() {
+  const navigate = useNavigate()
   const board = useGameState.use.board()
   const selectedTerrain = useGameState.use.selectedTerrain()
   const selectTerrain = useGameState.use.selectTerrain()
@@ -108,7 +109,7 @@ export default function Game() {
             style={{
               height: '2rem',
             }}
-            onClick={showMenu}
+            onClick={() => navigate('menu')}
           >
             Menu
           </Button>
@@ -157,7 +158,7 @@ export default function Game() {
                 }}
                 src={getCardUrl(currentCard.id)}
                 alt={currentCard.name}
-                onClick={() => showCard(currentCard.id)}
+                onClick={() => navigate('cards/' + currentCard.id)}
                 draggable={false}
               />
             </>
@@ -185,7 +186,7 @@ export default function Game() {
                   : undefined,
                 opacity: [firstEdict, secondEdict].includes(edict) ? 1 : 0.5,
               }}
-              onClick={() => showEdict(edict.id)}
+              onClick={() => navigate('edicts/' + edict.id)}
             >
               <img
                 src={getEdictUrl(edict.id)}
@@ -396,6 +397,7 @@ export default function Game() {
           )}
         </div>
       </div>
+      <Outlet />
     </div>
   )
 }
