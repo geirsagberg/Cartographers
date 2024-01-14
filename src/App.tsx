@@ -1,9 +1,10 @@
-import Game from './Game'
+import { match } from 'ts-pattern'
+import GameArea from './GameArea'
 import Start from './Start'
-import { useGameState } from './state'
+import { Router } from './router'
 
 export default function App() {
-  const gameCode = useGameState.use.gameCode()
+  const route = Router.useRoute(['Start', 'GameArea'])
 
   return (
     <div
@@ -16,7 +17,12 @@ export default function App() {
         height: '100dvh',
       }}
     >
-      {gameCode ? <Game /> : <Start />}
+      {match(route)
+        .with({ name: 'Start' }, () => <Start />)
+        .with({ name: 'GameArea' }, () => <GameArea />)
+        .otherwise(() => (
+          <div>404</div>
+        ))}
     </div>
   )
 }

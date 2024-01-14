@@ -24,6 +24,10 @@ import {
   Water,
 } from './types'
 
+export const GameWidth = 356
+
+export const GameHeight = 664
+
 export const IconSize = '1.25rem'
 
 export const LargeIconSize = '2rem'

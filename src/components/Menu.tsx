@@ -1,24 +1,24 @@
 import { FaX } from 'react-icons/fa6'
-import { InstanceProps } from 'react-modal-promise'
+import { Router } from '../router'
 import { useGameState } from '../state'
 import Button from './Button'
 import Modal from './Modal'
 
-export interface MenuProps extends InstanceProps<void> {}
-
-export default function Menu({ isOpen, onResolve }: MenuProps) {
+export default function Menu() {
   const resetGame = useGameState.use.resetGame()
+  const gameCode = useGameState.use.gameCode()
+
+  if (!gameCode) {
+    return null
+  }
+
+  const close = () => Router.push('GameMain', { gameCode })
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClickOutside={() => {
-        onResolve()
-      }}
-    >
+    <Modal onClickOutside={close}>
       <div
         css={{
-          background: 'url(background.jpg)',
+          background: 'url(/background.jpg)',
           padding: '20px',
           borderRadius: '4px',
           display: 'flex',
@@ -34,7 +34,7 @@ export default function Menu({ isOpen, onResolve }: MenuProps) {
           }}
         >
           <span>Menu</span>
-          <div onClick={() => onResolve()}>
+          <div onClick={close}>
             <FaX />
           </div>
         </h2>

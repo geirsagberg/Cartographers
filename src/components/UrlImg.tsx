@@ -1,18 +1,18 @@
-import { InstanceProps } from 'react-modal-promise'
+import { GameWidth } from '../themes'
 import Modal from './Modal'
 
-interface UrlImgProps extends InstanceProps<void> {
+interface UrlImgProps {
   url: string
-  secondUrl?: string
+  close: () => void
 }
 
-export default function UrlImg({ isOpen, onResolve, url }: UrlImgProps) {
+export default function UrlImg({ url, close }: UrlImgProps) {
   return (
-    <Modal isOpen={isOpen} onClickOutside={() => onResolve()}>
+    <Modal onClickOutside={close}>
       <img
-        onClick={() => onResolve()}
+        onClick={close}
         style={{
-          width: 356,
+          width: GameWidth,
         }}
         src={url}
         draggable={false}

@@ -1,8 +1,5 @@
 import { create } from 'react-modal-promise'
-import Edicts from './components/Edicts'
-import Menu from './components/Menu'
 import SeasonSummary from './components/SeasonSummary'
-import UrlImg from './components/UrlImg'
 import { Scores } from './types'
 
 export function sumScores(scores: Scores): number {
@@ -14,23 +11,9 @@ export function sumScores(scores: Scores): number {
   )
 }
 
-export const showEdicts = create(Edicts)
-
-const showUrl = create(UrlImg)
-
-export const showEdict = (id: number) => showUrl({ url: getEdictUrl(id) })
-
-export const showCard = (id: string, previousId?: string) =>
-  showUrl({
-    url: getCardUrl(id),
-    secondUrl: previousId ? getCardUrl(previousId) : undefined,
-  })
-
 export const showSeasonSummary = create(SeasonSummary)
 
-export const showMenu = create(Menu)
-
-export function getEdictUrl(id: number): string {
+export function getEdictUrl(id: string): string {
   return `https://www.happymeeple.com/img/CTG/scoring/${id}.jpg`
 }
 

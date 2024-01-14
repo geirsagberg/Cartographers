@@ -12,3 +12,7 @@ html {
   justify-items: center;
   gap: 0.25rem;
 }
+
+input {
+  outline: none;
+}

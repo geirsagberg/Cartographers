@@ -1,7 +1,7 @@
 import { FaCoins, FaSpaghettiMonsterFlying } from 'react-icons/fa6'
 import { InstanceProps } from 'react-modal-promise'
 import { useGameState } from '../state'
-import { IconBySeason } from '../themes'
+import { GameWidth, IconBySeason } from '../themes'
 import Button from './Button'
 import Modal from './Modal'
 
@@ -33,10 +33,10 @@ export default function SeasonSummary({
     <Modal isOpen={isOpen} onClickOutside={() => onResolve()}>
       <div
         css={{
-          background: 'url(background.jpg)',
+          background: 'url(/background.jpg)',
           padding: '20px',
           borderRadius: '4px',
-          width: 356,
+          width: GameWidth,
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem',

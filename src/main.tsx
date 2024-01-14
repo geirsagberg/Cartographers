@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import ModalContainer from 'react-modal-promise'
 import App from './App.tsx'
-import './normalize.css'
 
 window.addEventListener('popstate', (e) => {
   e.preventDefault()

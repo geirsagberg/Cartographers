@@ -10,14 +10,15 @@ import {
 import tinycolor from 'tinycolor2'
 import Cell from './Cell'
 import ScoresView from './ScoresView'
-import './app.css'
 import Button from './components/Button'
 import Expander from './components/Expander'
 import { getDecrees } from './rules/constants'
 import { toCoords } from './rules/utils'
-import { useGameState } from './state'
+import { showCurrentCard, useGameState } from './state'
 import {
   ColorMap,
+  GameHeight,
+  GameWidth,
   IconMap,
   LargeIconSize,
   SmallButtonSize,
@@ -33,7 +34,7 @@ import {
   isRuinsCard,
   isShapeCard,
 } from './types'
-import { getCardUrl, getEdictUrl, showCard, showEdict, showMenu } from './utils'
+import { getCardUrl, getEdictUrl } from './utils'
 
 const SmallButtonStyle: CSSProperties = {
   width: SmallButtonSize,
@@ -43,30 +44,34 @@ const SmallButtonStyle: CSSProperties = {
 const Selections: PlaceableTerrain[] = [Water, Forest, Field, Hamlet, Monster]
 
 export default function Game() {
-  const board = useGameState.use.board()
-  const selectedTerrain = useGameState.use.selectedTerrain()
-  const selectTerrain = useGameState.use.selectTerrain()
-  const nextPiece = useGameState.use.nextPiece()
-  const confirmPlacement = useGameState.use.confirmPlacement()
-  const clearPiece = useGameState.use.clearPiece()
-  const season = useGameState.use.season()
-  const endSeason = useGameState.use.endSeason()
-  const scores = useGameState.use.scores()
-  const edicts = useGameState.use.edictsByDecree()
-  const resetGame = useGameState.use.resetGame()
-  const seasonTime = useGameState.use.seasonTime()
-  const scoresByDecree = useGameState.use.scoresByDecree()
-  const maxTime = useGameState.use.maxTime()
-  const gameOver = useGameState.use.gameOver()
-  const legalPlacement = useGameState.use.legalPlacement()
-  const coins = useGameState.use.totalCoins()
-  const monsters = useGameState.use.monsterScore()
-  const currentCard = useGameState.use.currentCard()
-  const previousCard = useGameState.use.previousCard()
+  const {
+    board,
+    selectedTerrain,
+    selectTerrain,
+    nextPiece,
+    confirmPlacement,
+    clearPiece,
+    season,
+    endSeason,
+    scores,
+    edictsByDecree,
+    resetGame,
+    seasonTime,
+    scoresByDecree,
+    maxTime,
+    gameOver,
+    legalPlacement,
+    totalCoins,
+    monsterScore,
+    currentCard,
+    previousCard,
+    showMenu,
+    showEdict,
+  } = useGameState()
   const [firstDecree, secondDecree] = getDecrees(season)
 
-  const firstEdict = edicts[firstDecree]
-  const secondEdict = edicts[secondDecree]
+  const firstEdict = edictsByDecree[firstDecree]
+  const secondEdict = edictsByDecree[secondDecree]
 
   const legalTerrain =
     seasonTime < maxTime && !gameOver && isShapeCard(currentCard)
@@ -81,8 +86,8 @@ export default function Game() {
         alignItems: 'center',
         flexDirection: 'column',
         gap: '0.5rem',
-        width: 356,
-        height: 660,
+        width: GameWidth,
+        height: GameHeight,
       }}
     >
       <div
@@ -157,7 +162,7 @@ export default function Game() {
                 }}
                 src={getCardUrl(currentCard.id)}
                 alt={currentCard.name}
-                onClick={() => showCard(currentCard.id)}
+                onClick={showCurrentCard}
                 draggable={false}
               />
             </>
@@ -174,7 +179,7 @@ export default function Game() {
             New Game
           </Button>
         ) : (
-          Object.entries(edicts).map(([decree, edict]) => (
+          Object.entries(edictsByDecree).map(([decree, edict]) => (
             <div
               key={decree}
               css={{
@@ -317,11 +322,11 @@ export default function Game() {
           </span>
           <span>{scoresByDecree[secondDecree]}</span>
           <FaCoins />
-          <span>{coins}</span>
+          <span>{totalCoins}</span>
           <FaSpaghettiMonsterFlying />
           <span>
-            {monsters > 0 ? '-' : ''}
-            {monsters}
+            {monsterScore > 0 ? '-' : ''}
+            {monsterScore}
           </span>
         </div>
         <div

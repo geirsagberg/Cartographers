@@ -18,7 +18,7 @@ export type Scores = {
 }
 
 export type Edict = {
-  id: number
+  id: string
   type: EdictType
   name: string
   calculateScore: (board: Board, initialBoard: Board) => number
@@ -81,7 +81,9 @@ export type ExploreCard = ShapeCard & {
   time: number
 }
 
-export function isExploreCard(card: Card | null): card is ExploreCard {
+export function isExploreCard(
+  card: Card | null | undefined
+): card is ExploreCard {
   return card != null && 'time' in card
 }
 

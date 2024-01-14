@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Button from './components/Button'
 import { useGameState } from './state'
+import { GameHeight, GameWidth } from './themes'
 
 export default function Start() {
   const [code, setCode] = useState('')
@@ -15,8 +16,8 @@ export default function Start() {
         alignItems: 'center',
         flexDirection: 'column',
         gap: '1rem',
-        width: 356,
-        height: 664,
+        width: GameWidth,
+        height: GameHeight,
       }}
       onSubmit={(e) => {
         e.preventDefault()

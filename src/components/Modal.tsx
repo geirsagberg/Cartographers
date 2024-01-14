@@ -1,13 +1,13 @@
 import { PropsWithChildren } from 'react'
 
 interface ModalProps extends PropsWithChildren {
-  isOpen: boolean
+  isOpen?: boolean
   onClickOutside?: () => void
 }
 
 export default function Modal({
   children,
-  isOpen,
+  isOpen = true,
   onClickOutside,
 }: ModalProps) {
   if (!isOpen) {

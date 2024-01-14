@@ -77,7 +77,7 @@ function findClusters(board: Board, terrain: PlaceableTerrain): Set<Coords>[] {
 
 export const edicts: Edict[] = [
   {
-    id: 26,
+    id: '26',
     type: 'green',
     name: 'Sentinel Wood',
     calculateScore: (board: Board) =>
@@ -95,7 +95,7 @@ export const edicts: Edict[] = [
         .reduce((a, b) => a + b.length, 0),
   },
   {
-    id: 27,
+    id: '27',
     type: 'green',
     name: 'Greenbough',
     calculateScore: (board: Board) => {
@@ -114,7 +114,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 28,
+    id: '28',
     type: 'green',
     name: 'Treetower',
     calculateScore: (board: Board) =>
@@ -133,7 +133,7 @@ export const edicts: Edict[] = [
         .reduce((a, b) => a + b, 0),
   },
   {
-    id: 29,
+    id: '29',
     type: 'green',
     name: 'Stoneside Forest',
     calculateScore: (board: Board) => {
@@ -159,7 +159,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 30,
+    id: '30',
     type: 'yellowblue',
     name: 'Canal Lake',
     calculateScore: (board: Board) =>
@@ -181,7 +181,7 @@ export const edicts: Edict[] = [
         .reduce((a, b) => a + b, 0),
   },
   {
-    id: 31,
+    id: '31',
     type: 'yellowblue',
     name: 'Mages Valley',
     calculateScore: (board: Board) => {
@@ -214,7 +214,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 32,
+    id: '32',
     type: 'yellowblue',
     name: 'The Golden Granary',
     calculateScore: (board: Board, initialBoard: Board) => {
@@ -243,7 +243,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 33,
+    id: '33',
     type: 'yellowblue',
     name: 'Shoreside Expanse',
     calculateScore: (board: Board) => {
@@ -275,7 +275,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 34,
+    id: '34',
     type: 'red',
     name: 'Wildholds',
     calculateScore: (board: Board) => {
@@ -286,7 +286,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 35,
+    id: '35',
     type: 'red',
     name: 'Great City',
     calculateScore: (board: Board) => {
@@ -306,7 +306,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 36,
+    id: '36',
     type: 'red',
     name: 'Greengold Plains',
     calculateScore: (board: Board) => {
@@ -327,7 +327,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 37,
+    id: '37',
     type: 'red',
     name: 'Shieldgate',
     calculateScore: (board: Board) => {
@@ -338,7 +338,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 38,
+    id: '38',
     type: 'grey',
     name: 'Borderlands',
     calculateScore: (board: Board) => {
@@ -366,7 +366,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 39,
+    id: '39',
     type: 'grey',
     name: 'Lost Barony',
     calculateScore: (board: Board) => {
@@ -411,7 +411,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 40,
+    id: '40',
     type: 'grey',
     name: 'The Broken Road',
     calculateScore: (board: Board) => {
@@ -434,7 +434,7 @@ export const edicts: Edict[] = [
     },
   },
   {
-    id: 41,
+    id: '41',
     type: 'grey',
     name: 'The Cauldrons',
     calculateScore: (board: Board) =>
@@ -454,7 +454,7 @@ export const edicts: Edict[] = [
 export const edictsById = edicts.reduce((acc, edict) => {
   acc[edict.id] = edict
   return acc
-}, {} as Record<number, Edict>)
+}, {} as Record<string, Edict>)
 
 export function getEdictsByDecree(rng: Random): Record<Decree, Edict> {
   const types = shuffleArray(['green', 'yellowblue', 'red', 'grey'], rng)
