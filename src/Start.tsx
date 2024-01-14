@@ -28,7 +28,42 @@ export default function Start() {
       }}
     >
       <h1>Cartographers</h1>
-      <div>Enter game code:</div>
+      <div
+        css={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem',
+        }}
+      >
+        <a
+          href="https://thunderworksgames.com/products/cartographers-board-game#how-to-play"
+          target="_blank"
+          rel="noreferrer"
+        >
+          How to play
+        </a>
+        <a
+          href="https://www.happymeeple.com/en/board-games/cartographers/rules/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Extra information
+        </a>
+        <a
+          href="https://www.happymeeple.com/img/rules/CTG_English_Rules_0602.pdf"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Full rules (PDF)
+        </a>
+      </div>
+      <div
+        css={{
+          fontSize: 'large',
+        }}
+      >
+        Enter game code:
+      </div>
       <input
         type="text"
         css={{

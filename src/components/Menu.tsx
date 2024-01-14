@@ -8,10 +8,6 @@ export default function Menu() {
   const resetGame = useGameState.use.resetGame()
   const gameCode = useGameState.use.gameCode()
 
-  if (!gameCode) {
-    return null
-  }
-
   const close = () => Router.push('GameMain', { gameCode })
 
   return (
@@ -38,6 +34,27 @@ export default function Menu() {
             <FaX />
           </div>
         </h2>
+        <a
+          href="https://thunderworksgames.com/products/cartographers-board-game#how-to-play"
+          target="_blank"
+          rel="noreferrer"
+        >
+          How to play
+        </a>
+        <a
+          href="https://www.happymeeple.com/en/board-games/cartographers/rules/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Extra information
+        </a>
+        <a
+          href="https://www.happymeeple.com/img/rules/CTG_English_Rules_0602.pdf"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Full rules (PDF)
+        </a>
         <Button onClick={resetGame}>Reset</Button>
       </div>
     </Modal>

@@ -374,28 +374,23 @@ export const edicts: Edict[] = [
         row.map((cell, x) => {
           if (isFilledOrEdgeCell(cell)) {
             let size = 1
-            let nextSize = 1
-            let isSquare = true
-            while (
-              isSquare &&
-              x + nextSize <= board.length &&
-              y + nextSize <= board.length
-            ) {
-              for (let i = 1; i <= nextSize; i++) {
-                if (isEmptyOrEdge(board, x + nextSize, y + i)) {
-                  isSquare = false
-                  break
+            while (x + size < board.length && y + size < board.length) {
+              let isSquare = true
+              for (let i = 0; i <= size; i++) {
+                for (let j = 0; j <= size; j++) {
+                  if (isEmptyOrEdge(board, x + i, y + j)) {
+                    isSquare = false
+                    break
+                  }
                 }
-              }
-              for (let i = 1; i <= nextSize; i++) {
-                if (isEmptyOrEdge(board, x + i, y + nextSize)) {
-                  isSquare = false
+                if (!isSquare) {
                   break
                 }
               }
               if (isSquare) {
-                size = nextSize + 1
-                nextSize++
+                size++
+              } else {
+                break
               }
             }
             return size

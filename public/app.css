@@ -16,3 +16,7 @@ html {
 input {
   outline: none;
 }
+
+a {
+  color: inherit;
+}

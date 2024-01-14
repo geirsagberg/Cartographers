@@ -9,12 +9,10 @@ export default function Briefing() {
   const edicts = useGameState.use.edictsByDecree()
   const gameCode = useGameState.use.gameCode()
 
-  if (!gameCode) {
-    return null
-  }
+  const close = () => Router.push('GameMain', { gameCode })
 
   return (
-    <Modal>
+    <Modal onClickOutside={close}>
       <div
         css={{
           background: 'url(/background.jpg)',
@@ -54,9 +52,7 @@ export default function Briefing() {
             </div>
           ))}
         </div>
-        <Button onClick={() => Router.push('GameMain', { gameCode })}>
-          Close
-        </Button>
+        <Button onClick={close}>Close</Button>
       </div>
     </Modal>
   )
