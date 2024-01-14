@@ -1,5 +1,5 @@
 import { Router } from '../router'
-import { useGameState } from '../state'
+import { showCurrentCard, useGameState } from '../state'
 import { GameWidth } from '../themes'
 import { getEdictUrl } from '../utils'
 import Button from './Button'
@@ -9,7 +9,10 @@ export default function Briefing() {
   const edicts = useGameState.use.edictsByDecree()
   const gameCode = useGameState.use.gameCode()
 
-  const close = () => Router.push('GameMain', { gameCode })
+  const close = () => {
+    Router.push('GameMain', { gameCode })
+    showCurrentCard()
+  }
 
   return (
     <Modal onClickOutside={close}>
