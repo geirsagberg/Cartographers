@@ -192,6 +192,7 @@ const useGameStateBase = create<GameState & GameActions>()(
             Router.push('GameMain', { gameCode })
             Router.push('GameBriefing', { gameCode })
             set(() => getInitialState(gameCode))
+            set((state) => recalculateScores(state))
           },
           resetGame: () => {
             localStorage.clear()

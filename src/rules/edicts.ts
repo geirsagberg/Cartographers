@@ -20,7 +20,6 @@ import {
   fromCoords,
   getAdjacentTerrain,
   getTerrain,
-  isEmptyOrEdge,
   isFilledOrEdge,
   isFilledOrEdgeCell,
   shuffleArray,
@@ -370,38 +369,25 @@ export const edicts: Edict[] = [
     type: 'grey',
     name: 'Lost Barony',
     calculateScore: (board: Board) => {
-      const filledSquareSizes = board.map((row, y) =>
-        row.map((cell, x) => {
-          if (isFilledOrEdgeCell(cell)) {
+      let largestFilledSquareSize = 0
+
+      for (let y = 0; y < board.length; y++) {
+        for (let x = 0; x < board.length; x++) {
+          if (isFilledOrEdgeCell(board[y][x])) {
             let size = 1
-            while (x + size < board.length && y + size < board.length) {
-              let isSquare = true
-              for (let i = 0; i <= size; i++) {
-                for (let j = 0; j <= size; j++) {
-                  if (isEmptyOrEdge(board, x + i, y + j)) {
-                    isSquare = false
-                    break
-                  }
-                }
-                if (!isSquare) {
-                  break
-                }
-              }
-              if (isSquare) {
-                size++
-              } else {
-                break
-              }
+            while (
+              x + size < board.length &&
+              y + size < board.length &&
+              isFilledOrEdgeCell(board[y][x + size]) &&
+              isFilledOrEdgeCell(board[y + size][x])
+            ) {
+              size++
             }
-            return size
-          } else {
-            return 0
+            largestFilledSquareSize = Math.max(largestFilledSquareSize, size)
           }
-        })
-      )
-      const largestFilledSquareSize = Math.max(
-        ...filledSquareSizes.flatMap((row) => row)
-      )
+        }
+      }
+
       return largestFilledSquareSize * 3
     },
   },
