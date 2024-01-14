@@ -159,10 +159,9 @@ const useGameStateBase = create<GameState & GameActions>()(
                 state.currentCardIndex += 1
 
                 recalculateScores(state)
-
-                showCurrentCard()
               }
             })
+            showCurrentCard()
           },
           clearPiece: () =>
             set(({ nextPiece }) => {
@@ -187,6 +186,7 @@ const useGameStateBase = create<GameState & GameActions>()(
               scores.push(newScores)
               advanceSeason(state)
             })
+            showCurrentCard()
           },
           startGame: (gameCode: string) => {
             Router.push('GameMain', { gameCode })
@@ -272,8 +272,10 @@ function advanceSeason(state: GameState) {
 }
 
 export function showCurrentCard() {
-  const { gameCode } = useGameState.getState()
-  Router.push('GameCard', { gameCode })
+  const { gameCode, currentCard } = useGameState.getState()
+  if (currentCard) {
+    Router.push('GameCard', { gameCode })
+  }
 }
 
 export function dismissCard() {
