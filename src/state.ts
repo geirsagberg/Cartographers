@@ -427,10 +427,7 @@ function getMonsterScore(board: Board) {
 
 function updateSelectedTerrain(state: GameState) {
   const terrain = getSingleTerrain(getCurrentCard(state))
-  console.log(terrain)
-  console.log(state.selectedTerrain)
   state.selectedTerrain = terrain
-  console.log(state.selectedTerrain)
 }
 
 function recalculateScores(state: GameState) {
