@@ -1,6 +1,6 @@
 import tinyColor from 'tinycolor2'
-import { toCoords } from './rules'
-import { useGameState } from './state'
+import { toCoords } from '../rules'
+import { useGameState } from '../state'
 import {
   CellSize,
   ColorMap,
@@ -8,8 +8,8 @@ import {
   IconSize,
   RuinsColor,
   TextColor,
-} from './themes'
-import { Mountain, Ruins, Terrain, isRuinsCard } from './types'
+} from '../themes'
+import { Mountain, Ruins, Terrain, isRuinsCard } from '../types'
 
 export interface CellProps {
   terrain: Terrain

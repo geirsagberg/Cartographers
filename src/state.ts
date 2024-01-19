@@ -104,6 +104,7 @@ const computeState = (state: GameState) => ({
   firstDecree: getDecrees(state.season)[0],
   secondDecree: getDecrees(state.season)[1],
   monsterScore: getMonsterScore(state.board),
+  legalTerrain: getLegalTerrain(state),
 })
 
 const useGameStateBase = create<GameState & GameActions>()(
@@ -444,3 +445,13 @@ useGameState.subscribe(
     useGameState.setState(updateSelectedTerrain)
   }
 )
+
+function getLegalTerrain(state: GameState) {
+  const { seasonTime, season } = state
+  const maxTime = getMaxTime(season)
+  const gameOver = state.scores.length === 4
+  const currentCard = getCurrentCard(state)
+  return seasonTime < maxTime && !gameOver && isShapeCard(currentCard)
+    ? currentCard.terrains
+    : []
+}
