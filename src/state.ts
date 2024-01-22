@@ -54,7 +54,7 @@ interface GameActions {
   confirmPlacement: () => void
   clearPiece: () => void
   endSeason: () => void
-  startGame: (code: string) => void
+  startSoloGame: (code: string) => void
   resetGame: () => void
   showMenu: () => void
   showEdict: (id: string) => void
@@ -189,7 +189,7 @@ const useGameStateBase = create<GameState & GameActions>()(
             })
             showCurrentCard()
           },
-          startGame: (gameCode: string) => {
+          startSoloGame: (gameCode: string) => {
             Router.push('GameMain', { gameCode })
             Router.push('GameBriefing', { gameCode })
             set(() => getInitialState(gameCode))
@@ -289,6 +289,10 @@ export function dismissCard() {
       Router.replace('GameMain', { gameCode: state.gameCode })
     }
   })
+}
+
+export function startMultiplayerGame(gameCode: string) {
+  Router.push('Lobby', { gameCode })
 }
 
 function getMountainCoins(board: Board): number {

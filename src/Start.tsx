@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import Button from './components/Button'
-import { useGameState } from './state'
+import { startMultiplayerGame, useGameState } from './state'
 import { GameHeight, GameWidth } from './themes'
 
 export default function Start() {
   const [code, setCode] = useState('')
 
-  const startGame = useGameState.use.startGame()
+  const startSoloGame = useGameState.use.startSoloGame()
 
   return (
-    <form
+    <div
       css={{
         display: 'flex',
         justifyContent: 'center',
@@ -18,13 +18,6 @@ export default function Start() {
         gap: '1rem',
         width: GameWidth,
         height: GameHeight,
-      }}
-      onSubmit={(e) => {
-        e.preventDefault()
-        if (!code) {
-          return
-        }
-        startGame(code)
       }}
     >
       <h1>Cartographers</h1>
@@ -73,9 +66,12 @@ export default function Start() {
         value={code}
         onChange={(e) => setCode(e.target.value)}
       />
-      <Button type="submit" disabled={!code}>
-        Start
+      <Button disabled={!code} onClick={() => startSoloGame(code)}>
+        Start Solo
       </Button>
-    </form>
+      <Button disabled={!code} onClick={() => startMultiplayerGame(code)}>
+        Start/Join Multiplayer
+      </Button>
+    </div>
   )
 }
